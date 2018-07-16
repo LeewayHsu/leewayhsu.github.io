@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>确保 .NET 程序在系统中只有一个实例 | </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="保证一个应用程序在系统中只有一个运行的方式就是用一些特殊的信息来判定唯一性。一种思路是通过线程的信息，比如名字等来判断，另一种是通过线程同步互斥信号来达到目的。 第一种是查看线程的名字，看是否已经存在了：12345678910111213141516using System.Diagnostics;namespace OnlyOneInstanceApp&amp;#123;    class Progra">
+<meta property="og:type" content="article">
+<meta property="og:title" content="确保 .NET 程序在系统中只有一个实例">
+<meta property="og:url" content="http://yoursite.com/2018/06/30/确保 .NET 程序在系统中只有一个实例/index.html">
+<meta property="og:site_name">
+<meta property="og:description" content="保证一个应用程序在系统中只有一个运行的方式就是用一些特殊的信息来判定唯一性。一种思路是通过线程的信息，比如名字等来判断，另一种是通过线程同步互斥信号来达到目的。 第一种是查看线程的名字，看是否已经存在了：12345678910111213141516using System.Diagnostics;namespace OnlyOneInstanceApp&amp;#123;    class Progra">
+<meta property="og:locale" content="zh">
+<meta property="og:updated_time" content="2018-07-16T12:36:40.780Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="确保 .NET 程序在系统中只有一个实例">
+<meta name="twitter:description" content="保证一个应用程序在系统中只有一个运行的方式就是用一些特殊的信息来判定唯一性。一种思路是通过线程的信息，比如名字等来判断，另一种是通过线程同步互斥信号来达到目的。 第一种是查看线程的名字，看是否已经存在了：12345678910111213141516using System.Diagnostics;namespace OnlyOneInstanceApp&amp;#123;    class Progra">
+  
+    <link rel="alternate" href="/atom.xml" title="" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo"></a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-确保 .NET 程序在系统中只有一个实例" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/06/30/确保 .NET 程序在系统中只有一个实例/" class="article-date">
+  <time datetime="2018-06-30T02:20:08.000Z" itemprop="datePublished">2018-06-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      确保 .NET 程序在系统中只有一个实例
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>保证一个应用程序在系统中只有一个运行的方式就是用一些特殊的信息来判定唯一性。一种思路是通过线程的信息，比如名字等来判断，另一种是通过线程同步互斥信号来达到目的。</p>
+<p>第一种是查看线程的名字，看是否已经存在了：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">using System.Diagnostics;</span><br><span class="line"></span><br><span class="line">namespace OnlyOneInstanceApp</span><br><span class="line">&#123;</span><br><span class="line">    class Program</span><br><span class="line">    &#123;</span><br><span class="line">        static void Main(string[] args)</span><br><span class="line">        &#123;</span><br><span class="line">            if (Process.GetProcessesByName</span><br><span class="line">                (Process.GetCurrentProcess().ProcessName).Length &gt; 1)</span><br><span class="line">            &#123;</span><br><span class="line">                return;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这种方式不太严谨，首先如果两个程序同时运行，可能会检测不出同名然后继续运行。另外多个终端里名字是唯一的，这个方法不能检测出来。</p>
+<p>第二种是通过 <code>Mutex</code> 对象来实现：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">using System;</span><br><span class="line">using System.Threading;</span><br><span class="line"></span><br><span class="line">namespace OnlyOneInstanceApp</span><br><span class="line">&#123;</span><br><span class="line">    class Program</span><br><span class="line">    &#123;</span><br><span class="line">        private static Mutex mutex;</span><br><span class="line">        </span><br><span class="line">        static void Main(string[] args)</span><br><span class="line">        &#123;</span><br><span class="line">            bool aIsNewInstance;</span><br><span class="line">    </span><br><span class="line">            mutex = new Mutex(true, @&quot;Global\&quot; + &quot;OnlyOneInstanceApp&quot;, out aIsNewInstance);</span><br><span class="line">    </span><br><span class="line">            GC.KeepAlive(mutex);</span><br><span class="line">    </span><br><span class="line">            if (!aIsNewInstance)</span><br><span class="line">            &#123;</span><br><span class="line">                Console.WriteLine(&quot;该程序已经在系统中运行&quot;);</span><br><span class="line">                Console.ReadKey();</span><br><span class="line">                return;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>上述代码中，通过 <code>Mutex</code> 类来创建一个命名的线程间互斥锁，当其他程序也在试图创建同名的锁时，<code>Mutex</code> 构造函数返回的 out 参数 <code>createdNew</code> 会返回 <code>false</code>。名字的前缀”Global\” 保证在不同的终端运行时有一个唯一名字。<code>GC.KeepAlive(mutex)</code>  是为了防止 GC 觉得  <code>mutex</code>  在上一句之后不再被引用而被回收。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/06/30/确保 .NET 程序在系统中只有一个实例/" data-id="cjjoge4ya0004n6vf0sc1m1px" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/07/14/对象池模式/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          对象池模式
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/05/16/单例模式/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">单例模式</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018/07/14/对象池模式/">对象池模式</a>
+          </li>
+        
+          <li>
+            <a href="/2018/06/30/确保 .NET 程序在系统中只有一个实例/">确保 .NET 程序在系统中只有一个实例</a>
+          </li>
+        
+          <li>
+            <a href="/2017/05/16/单例模式/">单例模式</a>
+          </li>
+        
+          <li>
+            <a href="/2017/03/19/依赖反转、控制反转、依赖注入和策略模式/">依赖反转、控制反转、依赖注入和策略模式</a>
+          </li>
+        
+          <li>
+            <a href="/2016/02/23/异常和返回值/">异常和返回值</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 Leeway<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>
