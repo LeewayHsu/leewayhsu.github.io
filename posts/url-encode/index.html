@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html
+  dir="ltr"
+  lang="en"
+  data-theme=""
+  class="html"
+><head>
+  <title>
+    Liwei Xu
+        |
+        聊聊 URL 编码
+
+
+      
+
+
+    
+
+  </title>
+
+  
+  <meta charset="utf-8" /><meta name="generator" content="Hugo 0.102.3" /><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="author" content="Liwei Xu" />
+  <meta
+    name="description"
+    content=""
+  />
+  
+  
+    
+    
+    <link
+      rel="stylesheet"
+      href="/scss/main.min.b2e0cb07595e3519ab1193bb421914e06c0e26b0cc561fef23b3c6131d4d2ffa.css"
+      integrity="sha256-suDLB1leNRmrEZO7QhkU4GwOJrDMVh/vI7PGEx1NL/o="
+      crossorigin="anonymous"
+      type="text/css"
+    />
+
+  
+
+  
+  <link
+    rel="stylesheet"
+    href="/css/markupHighlight.min.31b0a1f317f55c529a460897848c97436bb138b19c399b37de70d463a8bf6ed5.css"
+    integrity="sha256-MbCh8xf1XFKaRgiXhIyXQ2uxOLGcOZs33nDUY6i/btU="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  
+  <link
+    rel="stylesheet"
+    href="/fontawesome/css/fontawesome.min.7f3c2281c7f965ce3c64888aa452793252a0416909c181097f81d0a0f7d1624e.css"
+    integrity="sha256-fzwigcf5Zc48ZIiKpFJ5MlKgQWkJwYEJf4HQoPfRYk4="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  <link
+    rel="stylesheet"
+    href="/fontawesome/css/solid.min.35fc032da8ede6681675d20a2f862fb9e1045c1d512d495fcf862c054daffef2.css"
+    integrity="sha256-NfwDLajt5mgWddIKL4YvueEEXB1RLUlfz4YsBU2v/vI="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  <link
+    rel="stylesheet"
+    href="/fontawesome/css/regular.min.3b92357925ea7284f0c6b0378396f39f470f7842ed9702f337e667c4026bf837.css"
+    integrity="sha256-O5I1eSXqcoTwxrA3g5bzn0cPeELtlwLzN&#43;ZnxAJr&#43;Dc="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  <link
+    rel="stylesheet"
+    href="/fontawesome/css/brands.min.ebb1096e1976e8cc4e2532cfa050b8f30eb13b8eb06be5cee3e38eb426b838ea.css"
+    integrity="sha256-67EJbhl26MxOJTLPoFC48w6xO46wa&#43;XO4&#43;OOtCa4OOo="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+
+  <link rel="canonical" href="https://xuliwei.xzy/posts/url-encode/" />
+
+  
+  
+  
+  
+  <script
+    type="text/javascript"
+    src="/js/anatole-header.min.f9132794301a01ff16550ed66763482bd848f62243d278f5e550229a158bfd32.js"
+    integrity="sha256-&#43;RMnlDAaAf8WVQ7WZ2NIK9hI9iJD0nj15VAimhWL/TI="
+    crossorigin="anonymous"
+  ></script>
+
+  
+    
+    
+    <script
+      type="text/javascript"
+      src="/js/anatole-theme-switcher.min.738c0e3a493854876aeab9e2316fd43f1936aeeac4cc6b3e60bb26456dba72ad.js"
+      integrity="sha256-c4wOOkk4VIdq6rniMW/UPxk2rurEzGs&#43;YLsmRW26cq0="
+      crossorigin="anonymous"
+    ></script>
+
+  
+
+  
+
+
+  
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="聊聊 URL 编码"/>
+<meta name="twitter:description" content="这里先说下 URL 和 URI 的区别，因为下面提到的一些方法的命名会用到 URI。 URL 是浏览器寻找信息时所需的资源位置，适用于 HTTP 和其他协议。 URI 是一类更通用的资源标识符，URL 实际上是它的一个子集。URI 是一个通用的概念，由两个主要的子集 URL 和 URN 构成，URL 是通"/>
+
+
+
+  
+  <meta property="og:title" content="聊聊 URL 编码" />
+<meta property="og:description" content="这里先说下 URL 和 URI 的区别，因为下面提到的一些方法的命名会用到 URI。 URL 是浏览器寻找信息时所需的资源位置，适用于 HTTP 和其他协议。 URI 是一类更通用的资源标识符，URL 实际上是它的一个子集。URI 是一个通用的概念，由两个主要的子集 URL 和 URN 构成，URL 是通" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://xuliwei.xzy/posts/url-encode/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2019-05-02T23:36:21+08:00" />
+<meta property="article:modified_time" content="2019-05-02T23:36:21+08:00" /><meta property="og:site_name" content="只言片语" />
+
+
+
+
+  
+  
+  
+  
+  <script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "articleSection": "posts",
+        "name": "聊聊 URL 编码",
+        "headline": "聊聊 URL 编码",
+        "alternativeHeadline": "",
+        "description": "
+      
+        这里先说下 URL 和 URI 的区别，因为下面提到的一些方法的命名会用到 URI。 URL 是浏览器寻找信息时所需的资源位置，适用于 HTTP 和其他协议。 URI 是一类更通用的资源标识符，URL 实际上是它的一个子集。URI 是一个通用的概念，由两个主要的子集 URL 和 URN 构成，URL 是通
+
+
+      
+
+
+    ",
+        "inLanguage": "en-us",
+        "isFamilyFriendly": "true",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/xuliwei.xzy\/posts\/url-encode\/"
+        },
+        "author" : {
+            "@type": "Person",
+            "name": "Liwei Xu"
+        },
+        "creator" : {
+            "@type": "Person",
+            "name": "Liwei Xu"
+        },
+        "accountablePerson" : {
+            "@type": "Person",
+            "name": "Liwei Xu"
+        },
+        "copyrightHolder" : {
+            "@type": "Person",
+            "name": "Liwei Xu"
+        },
+        "copyrightYear" : "2019",
+        "dateCreated": "2019-05-02T23:36:21.00Z",
+        "datePublished": "2019-05-02T23:36:21.00Z",
+        "dateModified": "2019-05-02T23:36:21.00Z",
+        "publisher":{
+            "@type":"Organization",
+            "name": "Liwei Xu",
+            "url": "https://xuliwei.xzy",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https:\/\/xuliwei.xzyfavicon-32x32.png",
+                "width":"32",
+                "height":"32"
+            }
+        },
+        "image": 
+      [
+      ]
+
+    ,
+        "url" : "https:\/\/xuliwei.xzy\/posts\/url-encode\/",
+        "wordCount" : "2349",
+        "genre" : [ ],
+        "keywords" : [ ]
+    }
+  </script>
+
+
+
+</head>
+<body
+    
+      class="body theme--light"
+
+    
+  >
+    <div class="wrapper">
+      <aside
+        
+          class="wrapper__sidebar"
+
+        
+      ><div
+  class="sidebar
+    animated fadeInDown
+
+  "
+>
+  <div class="sidebar__content">
+    <div class="sidebar__introduction">
+      <img
+        class="sidebar__introduction-profileimage"
+        src="/images/profile.jpg"
+        alt="profile picture"
+      />
+      
+        <div class="sidebar__introduction-title">
+          <a href="/">只言片语</a>
+        </div>
+
+      
+      <div class="sidebar__introduction-description">
+        <p></p>
+      </div>
+    </div>
+    <ul class="sidebar__list">
+      
+    </ul>
+  </div><footer class="footer footer__sidebar">
+  <ul class="footer__list">
+    <li class="footer__item">
+      &copy;
+      
+        Liwei Xu
+        2022
+
+
+      
+    </li>
+    
+  </ul>
+</footer>
+  
+  <script
+    type="text/javascript"
+    src="/js/medium-zoom.min.1248fa75275e5ef0cbef27e8c1e27dc507c445ae3a2c7d2ed0be0809555dac64.js"
+    integrity="sha256-Ekj6dSdeXvDL7yfoweJ9xQfERa46LH0u0L4ICVVdrGQ="
+    crossorigin="anonymous"
+  ></script></div>
+</aside>
+      <main
+        
+          class="wrapper__main"
+
+        
+      >
+        <header class="header"><div
+  class="
+    animated fadeInDown
+
+  "
+>
+  <a role="button" class="navbar-burger" data-target="navMenu" aria-label="menu" aria-expanded="false">
+    <span aria-hidden="true" class="navbar-burger__line"></span>
+    <span aria-hidden="true" class="navbar-burger__line"></span>
+    <span aria-hidden="true" class="navbar-burger__line"></span>
+  </a>
+  <nav class="nav">
+    <ul class="nav__list" id="navMenu">
+      
+      
+        
+        
+          <li class="nav__list-item">
+            <a
+              
+              href="/"
+              
+              title=""
+              >Home</a
+            >
+          </li>
+
+        
+
+
+      
+    </ul>
+    <ul class="nav__list nav__list--end">
+      
+      
+        <li class="nav__list-item">
+          <div class="themeswitch">
+            <a title="Switch Theme">
+              <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a>
+          </div>
+        </li>
+
+      
+    </ul>
+  </nav>
+</div>
+</header>
+  <div
+    class="post 
+      animated fadeInDown
+
+    "
+  >
+    
+    <div class="post__content">
+      <h1>聊聊 URL 编码</h1>
+      <p>这里先说下 URL 和 URI 的区别，因为下面提到的一些方法的命名会用到 URI。</p>
+<p>URL 是浏览器寻找信息时所需的资源位置，适用于 HTTP 和其他协议。</p>
+<p>URI 是一类更通用的资源标识符，URL 实际上是它的一个子集。URI 是一个通用的概念，由两个主要的子集 URL 和 URN 构成，URL 是通过描述资源的位置来标识资源的，而 URN 则是通过名字来识别资源的，与它们当前所处位置无关。HTTP 规范将更通用的概念 URI 作为其资源标识符，但实际上，HTTP 应用程序处理的只是 URI 的 URL 子集。因此可以认为，在很多讨论 HTTP 的上下文中，URI 和 URL 是一个意思。</p>
+<h2 id="url-为什么要编码">URL 为什么要编码</h2>
+<p>在讨论 URL 编码之前，首先要思考一个问题，URL 为什么要编码。</p>
+<p>一个原因是 URL 要统一地命名因特网上所有的资源，并可以通过不同的协议来传送资源，因此它必须是 portable 的。有些协议比如 SMTP 会去掉一些特定的字符。因此 URL 所使用的字符集相对较小。</p>
+<p>另一个原因则是因为 URL 是供人阅读的，因此 invisible 和 nonprinting 字符虽然 portable，但也不能在 URL 中使用。</p>
+<p>因此，需要一个转义机制，将非安全的字符或二进制数据编码成安全字符。</p>
+<h2 id="url-字符集">URL 字符集</h2>
+<p>编码其实就是将一个字符集转换成另一个字符集。URL 使用的是 ASCII 码的一个子集，配合转义序列，这样可以对任意字符值或数据进行编码。</p>
+<p>根据 RFC 3986：</p>
+<blockquote>
+<p>The characters allowed in a URI are either reserved or unreserved (or a percent character as part of a percent-encoding). </p>
+</blockquote>
+<p>reserved 字符是那些有时候有特殊意义的字符，比如 <code>/</code> 用来分割 URL 的不同部分。unreserved 字符没有特殊意义。</p>
+<p>如果要让 reserved 字符脱离本身的特殊含义而单纯作为字符存在于 URL 中时，可以通过 <code>%</code> 转义。转义时先将 reserved 字符转换成其 ASCII 值，然后用两个十六进制数来表示，并在前面加上 <code>%</code> 。比如 <code>~</code> 字符的 ASCII 码是 126，即 0x7E，那么就转译成 <code>%7E</code>，空格的 ASCII 码是32，即 0x20，那么转义成 <code>%20</code>，而%本身的 ASCII 码是27，即0x25，则转义成 <code>%25</code>。</p>
+<p>如果字符本身不是 ASCII 怎么办？可以先将其用一种编码形式进行编码，比如 UTF-8，然后将每个字节按照上面所述的去表示。</p>
+<p>unreserved 字符有：<code>[A-Za-z0-9]</code>、<code>-</code>、<code>_</code>、<code>.</code> 和 <code>~</code>。</p>
+<p>reserved 字符以及对应的转义序列：</p>
+<table>
+<thead>
+<tr>
+<th>字符</th>
+<th>序列</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>!</td>
+<td>%21</td>
+</tr>
+<tr>
+<td>#</td>
+<td>%23</td>
+</tr>
+<tr>
+<td>$</td>
+<td>%24</td>
+</tr>
+<tr>
+<td>&amp;</td>
+<td>%26</td>
+</tr>
+<tr>
+<td>'</td>
+<td>%27</td>
+</tr>
+<tr>
+<td>(</td>
+<td>%28</td>
+</tr>
+<tr>
+<td>)</td>
+<td>%29</td>
+</tr>
+<tr>
+<td>*</td>
+<td>%2A</td>
+</tr>
+<tr>
+<td>+</td>
+<td>%2B</td>
+</tr>
+<tr>
+<td>,</td>
+<td>%2C</td>
+</tr>
+<tr>
+<td>/</td>
+<td>%2F</td>
+</tr>
+<tr>
+<td>:</td>
+<td>%3A</td>
+</tr>
+<tr>
+<td>;</td>
+<td>%3B</td>
+</tr>
+<tr>
+<td>=</td>
+<td>%3D</td>
+</tr>
+<tr>
+<td>?</td>
+<td>%3F</td>
+</tr>
+<tr>
+<td>@</td>
+<td>%40</td>
+</tr>
+<tr>
+<td>[</td>
+<td>%5B</td>
+</tr>
+<tr>
+<td>]</td>
+<td>%5D</td>
+</tr>
+</tbody>
+</table>
+<p>另外 % 本身是 %25。</p>
+<h2 id="关于是否要转义">关于是否要转义</h2>
+<p>URL 和一般程序语言中的字符串在对待转义的处理上不太一样。URL 中 reserved 字符是否必须要转义是根据上下文定的，比如 query component 中，<code>/</code> 虽然是 reserved 字符但是它已经没有 reserved 用处了，除非某个特殊的 URI 方案如此规定。此时该字符无须用 % 转义，但还是推荐转义。</p>
+<p>unreserved 字符转义或不转义对于 URI 的语义上来说是等价的，但是有些 URI 处理程序可能会有不同的处理，所以还是推荐不转义。</p>
+<p>RFC 1738 规定 URI 中提供二进制数据的，需要将数据分成 8 位一组的字节，然后每个字节用 % 做前缀。比如字节 0x0F 就表示成 %0F，不过 0x41 就可以表示成 %41 或直接表示成 A。推荐优先使用这些 unreserved 字符因为这样 URL 会更短。</p>
+<p>现行的 RFC 3986 标准推荐所有的 unreserved 字符不转义，其他字符都通过 UTF-8 转成字节，然后在用上面二进制的规则转成 % 表示（比如把“的”用 UTF8 转义成 %E7%9A%84，应该是“的”的 UTF8 编码是 E7 9A 84，所以就编码成%E7%9A%84）。该标准是2005年引入的，所以之前的 URI 方案不受影响。</p>
+<p>有些不标准的做法是把 Unicode 字符在 URI 中表示为: <code>%uxxxx</code>，其中 <code>xxxx</code> 是用 4 个十六进制数字表示的 Unicode 的码位值。所有的 RFC 中都没有这种表示方式，JavaScript 曾经提供过 escape 函数来使用该方式，但也有 encodeURI 和 encodeURIComponent 函数转换字符到UTF-8字节序列并用百分号编码每个字节。</p>
+<p>综合而言，除了 unreserved 字符以及发挥其特殊作用的 reserved 字符（比如 <code>/</code> 用在分隔 URL 的 component 时），其他字符都需要用 % 转义。</p>
+<h2 id="javascript-中encodeuri-和encodeuricomponent">JavaScript 中 <code>encodeURI</code> 和 <code>encodeURIComponent</code></h2>
+<p>上面的讨论在实际应用中可以解释 JavaScript 中 <code>encodeURI</code> 和 <code>encodeURIComponent</code> 的区别。</p>
+<p><code>encodeURI</code> 的目的是对整个 URI 进行转码，因此 reserved 字符是不编码的，也就是说 <code>www.a.com/b c.html</code> 会被编码成 <code>www.a.com/b%20c.html</code>，它只对非 URI 字符集中的空格进行了编码。</p>
+<p><code>encodeURIComponent</code> 的目的是对某个 compent 内部进行编码，因此它认为它返回的结果中不应该有 reserved 字符（因为 reserved 字符应该出现在 component 之间而非单个 component 内部），所以 <code>www.a.com/b c.html</code> 会被编码成 <code>www.a.com%2Fb%20c.html</code>，看到 <code>/</code> 也被编码了。</p>
+<h2 id="关于-urlencode-的--和空格">关于 UrlEncode 的 <code>+</code> 和空格</h2>
+<p>之所以有这篇文章，是因为在实际开发过程中，经常会因为 HTML 或者 Ajax 中对于一些字符的编码的差异导致解析 BUG。</p>
+<p>当使用 HTML 表达提交数据时，field 的 name 和 value 会被编码并通过 HTTP 发送到服务器。默认的编码是一个早期的通用 URI 百分号编码规则的版本，其中一个不同是将空格编码成 <code>+</code> 而不是 <code>%20</code>。当 media type 是 application/x-www-form-urlencoded 时就会按这套规则，并且当前依然定义在 HTML 和 XForms 的规范中。此外，CGI 的规范中包含 web 服务器如何解码该类型数据的规则。当 HMTL 的 form 数据用 GET 请求发送时，请求的 URI 的 query component 中就是这么编码的。当用 POST 和 Email 发送时，数据在报文 body 中，并且 Content-Type 首部包含 application/x-www-form-urlencoded。</p>
+<p>上面的差异反映在 .NET 中就是 <code>HttpUtility.UrlEncode</code> 会将空格编码成 <code>+</code>，而 <code>HttpUtility.UrlPathEncode</code> 会将空格编码成 <code>%20</code>。从这点可以看出，.NET 的设计者应该觉得 <code>HttpUtility.UrlPathEncode</code> 是为生成 URI 服务的，而 <code>HttpUtility.UrlEncode</code> 是为生成 GET 和 POST 数据服务的。除此之外，<code>HttpUtility.UrlPathEncode</code> 和 JavaScript 中的 <code>encodeURI</code> 一样，reserved 字符是不编码的。</p>
+<p>同样，这些差异也会反映在前段页面上。如果是 form 提交操作，无论是 GET 或 POST，<code>+</code> 会被编码成 <code>%2B</code>，空格会被编码成 <code>+</code>。而 Ajax 的 GET 操作中，会将空格会变成 <code>%20</code>，<code>+</code> 会不变。</p>
+<p>根据之前的结论，可以得出 JavaScript 中 encodeURI 不会对 <code>+</code> 做转义，而 encodeURIComponent 会。</p>
+<p>以前也写过一篇关于 base64 的文章，提到 base64 用在 Url 上时会将 <code>+</code> 替换掉，原因其实也是因为 <code>+</code> 出现在地址栏中有可能会被转成空格。</p>
+<p>综上，关于 <code>+</code> 和空格在前端的方案可以归结为：</p>
+<ul>
+<li>对于 Ajax 的 POST 操作和 form 表单提交，正常处理就行，一般的后端框架在 Content-Type 为 application/x-www-form-urlencoded 是可以正常解析的。</li>
+<li>对于 Ajax 的 GET 操作，先将 <code>+</code> 替换成 <code>%2B</code>，接下来就正常处理，不用 encodeURIComponent 的原因是它也会转义 <code>=</code>，所以要每个查询参数都一一应用太麻烦了。</li>
+</ul>
+</div>
+    <div class="post__footer">
+      
+
+      
+    </div>
+
+    
+  </div>
+
+
+      </main>
+    </div><footer class="footer footer__base">
+  <ul class="footer__list">
+    <li class="footer__item">
+      &copy;
+      
+        Liwei Xu
+        2022
+
+
+      
+    </li>
+    
+  </ul>
+</footer>
+  
+  <script
+    type="text/javascript"
+    src="/js/medium-zoom.min.1248fa75275e5ef0cbef27e8c1e27dc507c445ae3a2c7d2ed0be0809555dac64.js"
+    integrity="sha256-Ekj6dSdeXvDL7yfoweJ9xQfERa46LH0u0L4ICVVdrGQ="
+    crossorigin="anonymous"
+  ></script></body>
+</html>

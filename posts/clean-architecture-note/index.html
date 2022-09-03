@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html
+  dir="ltr"
+  lang="en"
+  data-theme=""
+  class="html"
+><head>
+  <title>
+    Liwei Xu
+        |
+        《架构整洁之道》读书笔记
+
+
+      
+
+
+    
+
+  </title>
+
+  
+  <meta charset="utf-8" /><meta name="generator" content="Hugo 0.102.3" /><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="author" content="Liwei Xu" />
+  <meta
+    name="description"
+    content=""
+  />
+  
+  
+    
+    
+    <link
+      rel="stylesheet"
+      href="/scss/main.min.b2e0cb07595e3519ab1193bb421914e06c0e26b0cc561fef23b3c6131d4d2ffa.css"
+      integrity="sha256-suDLB1leNRmrEZO7QhkU4GwOJrDMVh/vI7PGEx1NL/o="
+      crossorigin="anonymous"
+      type="text/css"
+    />
+
+  
+
+  
+  <link
+    rel="stylesheet"
+    href="/css/markupHighlight.min.31b0a1f317f55c529a460897848c97436bb138b19c399b37de70d463a8bf6ed5.css"
+    integrity="sha256-MbCh8xf1XFKaRgiXhIyXQ2uxOLGcOZs33nDUY6i/btU="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  
+  <link
+    rel="stylesheet"
+    href="/fontawesome/css/fontawesome.min.7f3c2281c7f965ce3c64888aa452793252a0416909c181097f81d0a0f7d1624e.css"
+    integrity="sha256-fzwigcf5Zc48ZIiKpFJ5MlKgQWkJwYEJf4HQoPfRYk4="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  <link
+    rel="stylesheet"
+    href="/fontawesome/css/solid.min.35fc032da8ede6681675d20a2f862fb9e1045c1d512d495fcf862c054daffef2.css"
+    integrity="sha256-NfwDLajt5mgWddIKL4YvueEEXB1RLUlfz4YsBU2v/vI="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  <link
+    rel="stylesheet"
+    href="/fontawesome/css/regular.min.3b92357925ea7284f0c6b0378396f39f470f7842ed9702f337e667c4026bf837.css"
+    integrity="sha256-O5I1eSXqcoTwxrA3g5bzn0cPeELtlwLzN&#43;ZnxAJr&#43;Dc="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  <link
+    rel="stylesheet"
+    href="/fontawesome/css/brands.min.ebb1096e1976e8cc4e2532cfa050b8f30eb13b8eb06be5cee3e38eb426b838ea.css"
+    integrity="sha256-67EJbhl26MxOJTLPoFC48w6xO46wa&#43;XO4&#43;OOtCa4OOo="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+
+  <link rel="canonical" href="https://xuliwei.xzy/posts/clean-architecture-note/" />
+
+  
+  
+  
+  
+  <script
+    type="text/javascript"
+    src="/js/anatole-header.min.f9132794301a01ff16550ed66763482bd848f62243d278f5e550229a158bfd32.js"
+    integrity="sha256-&#43;RMnlDAaAf8WVQ7WZ2NIK9hI9iJD0nj15VAimhWL/TI="
+    crossorigin="anonymous"
+  ></script>
+
+  
+    
+    
+    <script
+      type="text/javascript"
+      src="/js/anatole-theme-switcher.min.738c0e3a493854876aeab9e2316fd43f1936aeeac4cc6b3e60bb26456dba72ad.js"
+      integrity="sha256-c4wOOkk4VIdq6rniMW/UPxk2rurEzGs&#43;YLsmRW26cq0="
+      crossorigin="anonymous"
+    ></script>
+
+  
+
+  
+
+
+  
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="《架构整洁之道》读书笔记"/>
+<meta name="twitter:description" content="R.C.Martin 的这本架构书讨论的是如何设计一个架构，并不会涉及到实现层面的东西，比如语言、框架、缓存和数据库之类的东西。这些在他的理念中属于具体的细节，不是架构应该考虑的东西。在他看来，架构其实就是设计。 一句话总结好的软件架构：围绕业务逻辑和用例而非技"/>
+
+
+
+  
+  <meta property="og:title" content="《架构整洁之道》读书笔记" />
+<meta property="og:description" content="R.C.Martin 的这本架构书讨论的是如何设计一个架构，并不会涉及到实现层面的东西，比如语言、框架、缓存和数据库之类的东西。这些在他的理念中属于具体的细节，不是架构应该考虑的东西。在他看来，架构其实就是设计。 一句话总结好的软件架构：围绕业务逻辑和用例而非技" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://xuliwei.xzy/posts/clean-architecture-note/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-12-08T15:36:21+08:00" />
+<meta property="article:modified_time" content="2021-12-08T15:36:21+08:00" /><meta property="og:site_name" content="只言片语" />
+
+
+
+
+  
+  
+  
+  
+  <script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "articleSection": "posts",
+        "name": "《架构整洁之道》读书笔记",
+        "headline": "《架构整洁之道》读书笔记",
+        "alternativeHeadline": "",
+        "description": "
+      
+        R.C.Martin 的这本架构书讨论的是如何设计一个架构，并不会涉及到实现层面的东西，比如语言、框架、缓存和数据库之类的东西。这些在他的理念中属于具体的细节，不是架构应该考虑的东西。在他看来，架构其实就是设计。 一句话总结好的软件架构：围绕业务逻辑和用例而非技
+
+
+      
+
+
+    ",
+        "inLanguage": "en-us",
+        "isFamilyFriendly": "true",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/xuliwei.xzy\/posts\/clean-architecture-note\/"
+        },
+        "author" : {
+            "@type": "Person",
+            "name": "Liwei Xu"
+        },
+        "creator" : {
+            "@type": "Person",
+            "name": "Liwei Xu"
+        },
+        "accountablePerson" : {
+            "@type": "Person",
+            "name": "Liwei Xu"
+        },
+        "copyrightHolder" : {
+            "@type": "Person",
+            "name": "Liwei Xu"
+        },
+        "copyrightYear" : "2021",
+        "dateCreated": "2021-12-08T15:36:21.00Z",
+        "datePublished": "2021-12-08T15:36:21.00Z",
+        "dateModified": "2021-12-08T15:36:21.00Z",
+        "publisher":{
+            "@type":"Organization",
+            "name": "Liwei Xu",
+            "url": "https://xuliwei.xzy",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https:\/\/xuliwei.xzyfavicon-32x32.png",
+                "width":"32",
+                "height":"32"
+            }
+        },
+        "image": 
+      [
+      ]
+
+    ,
+        "url" : "https:\/\/xuliwei.xzy\/posts\/clean-architecture-note\/",
+        "wordCount" : "5237",
+        "genre" : [ ],
+        "keywords" : [ ]
+    }
+  </script>
+
+
+
+</head>
+<body
+    
+      class="body theme--light"
+
+    
+  >
+    <div class="wrapper">
+      <aside
+        
+          class="wrapper__sidebar"
+
+        
+      ><div
+  class="sidebar
+    animated fadeInDown
+
+  "
+>
+  <div class="sidebar__content">
+    <div class="sidebar__introduction">
+      <img
+        class="sidebar__introduction-profileimage"
+        src="/images/profile.jpg"
+        alt="profile picture"
+      />
+      
+        <div class="sidebar__introduction-title">
+          <a href="/">只言片语</a>
+        </div>
+
+      
+      <div class="sidebar__introduction-description">
+        <p></p>
+      </div>
+    </div>
+    <ul class="sidebar__list">
+      
+    </ul>
+  </div><footer class="footer footer__sidebar">
+  <ul class="footer__list">
+    <li class="footer__item">
+      &copy;
+      
+        Liwei Xu
+        2022
+
+
+      
+    </li>
+    
+  </ul>
+</footer>
+  
+  <script
+    type="text/javascript"
+    src="/js/medium-zoom.min.1248fa75275e5ef0cbef27e8c1e27dc507c445ae3a2c7d2ed0be0809555dac64.js"
+    integrity="sha256-Ekj6dSdeXvDL7yfoweJ9xQfERa46LH0u0L4ICVVdrGQ="
+    crossorigin="anonymous"
+  ></script></div>
+</aside>
+      <main
+        
+          class="wrapper__main"
+
+        
+      >
+        <header class="header"><div
+  class="
+    animated fadeInDown
+
+  "
+>
+  <a role="button" class="navbar-burger" data-target="navMenu" aria-label="menu" aria-expanded="false">
+    <span aria-hidden="true" class="navbar-burger__line"></span>
+    <span aria-hidden="true" class="navbar-burger__line"></span>
+    <span aria-hidden="true" class="navbar-burger__line"></span>
+  </a>
+  <nav class="nav">
+    <ul class="nav__list" id="navMenu">
+      
+      
+        
+        
+          <li class="nav__list-item">
+            <a
+              
+              href="/"
+              
+              title=""
+              >Home</a
+            >
+          </li>
+
+        
+
+
+      
+    </ul>
+    <ul class="nav__list nav__list--end">
+      
+      
+        <li class="nav__list-item">
+          <div class="themeswitch">
+            <a title="Switch Theme">
+              <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a>
+          </div>
+        </li>
+
+      
+    </ul>
+  </nav>
+</div>
+</header>
+  <div
+    class="post 
+      animated fadeInDown
+
+    "
+  >
+    
+    <div class="post__content">
+      <h1>《架构整洁之道》读书笔记</h1>
+      <p>R.C.Martin 的这本架构书讨论的是如何设计一个架构，并不会涉及到实现层面的东西，比如语言、框架、缓存和数据库之类的东西。这些在他的理念中属于具体的细节，不是架构应该考虑的东西。在他看来，架构其实就是设计。</p>
+<p>一句话总结好的软件架构：围绕业务逻辑和用例而非技术框架展开架构设计，将软件策略分为高低层，层次越高离输入输出越远，离业务逻辑越近，通过 DIP 严格控制依赖关系，让低层依赖于高层。</p>
+<h2 id="1-编程范式">1. 编程范式</h2>
+<p>编程范式的作用是从某一方面限制和规范了程序员的能力，有三个编程：</p>
+<ul>
+<li>结构化编程：限制了 goto 语句，将程序结构限制在顺序、分支和循环上，对程序控制权的直接转移进行了限制和规范。</li>
+<li>面向对象编程：通过多态让函数指针更易于使用也更安全，对程序控制权的间接转移进行了限制和规范。</li>
+<li>函数式编程：对程序中的赋值进行了限制和规范。以此可以将软件分为可变部分和不可变部分，不可变部分可以降低并发的难度。</li>
+</ul>
+<h2 id="2-代码和组件的构建原则">2. 代码和组件的构建原则</h2>
+<p>好的结构离不开整洁的代码和合适的组件构建。</p>
+<ul>
+<li>整洁的代码可以通过 SOLID 原则来指导：
+<ul>
+<li>SRP：单一职责原则</li>
+<li>OCP：开闭原则</li>
+<li>LSP：里氏替换原则</li>
+<li>ISP：接口隔离原则</li>
+<li>DIP：依赖反转原则</li>
+</ul>
+</li>
+<li>组件的构建则可以分为组件聚合和组件耦合：
+<ul>
+<li>组件的聚合有三个原则：
+<ul>
+<li>复用/发布等同原则：软件复用的最小粒度应等同于其发布的最小粒度。</li>
+<li>共同闭包原则：应该将那些会同时修改，并且为相同目的而修改的类放到同一个组件中。</li>
+<li>共同复用原则：不要强迫一个组件的用户依赖他们不需要的东西。</li>
+</ul>
+</li>
+<li>组件的耦合有三个原则：
+<ul>
+<li>无依赖环原则：组件依赖关系图中不应该出现环。</li>
+<li>稳定依赖原则：依赖关系必须要指向更稳定的方向。</li>
+<li>稳定抽象原则：一个组件的抽象化程度应该与其稳定性保持一致。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="3-软件架构">3. 软件架构</h2>
+<p>软件的价值有两个维度，一个是行为维度，即它的功能，另一个就是架构，体现了软件的灵活性。</p>
+<p>架构终极目标是用最小的人力成本来满足构建和维护该系统的需求。</p>
+<p>架构的实质就是规划如何将系统切分成组件，并安排好组件之间的排列关系，以及组件之间互相通信的方式。</p>
+<p>软件架构的目的是为了更好的体现用例，并支撑开发、部署、运行和维护：</p>
+<ul>
+<li>用例：架构必须能支持其自身的设计意图，让系统的行为意图在架构层面上可见。</li>
+<li>运行：架构需要能满足运行的要求，比如吞吐量、响应时间以及数据查询时间等。架构要能支持系统为了达到这些目标而做出的一些决策，比如是用微服务还是用单进程等。</li>
+<li>开发：架构需要方便开发团队对软件进行开发，比如单个团队可能选择单体系统，多个团队则可以选择多个组件</li>
+<li>部署：正确的划分和隔离组件，可以让部署变得更容易</li>
+<li>维护：维护的成本主要在探秘和风险。探秘的成本在确定新增功能或修复问题的最佳位置和方式，风险的成本在于进行上述修改时衍生出的问题。这些都和架构有关。</li>
+</ul>
+<p>设计良好的架构应该平衡上面的关注点，但这种平衡很难，因为大部分时候这些元素比如用例、运行条件和团队结构等等，都是未知的，而且也会随时变化。因此软件架构设计的总策略就是尽可能长时间地保留尽可能多的可选项。所有的软件系统都可以降解为策略与细节两种元素：</p>
+<ul>
+<li>策略体现的是软件中所有的业务规则与操作过程，因此它是系统真正的价值所在。</li>
+<li>细节就是具体的框架和数据库等，细节就是可选项。细节推迟的好处是：
+<ul>
+<li>越到项目的后期，就拥有越多的信息来做出合理的决策。</li>
+<li>可以让有机会做不同的尝试。保留这些可选项的时间越长，实验的机会也就越多，做决策的时候就能拥有越充足的信息。</li>
+</ul>
+</li>
+</ul>
+<p>可以通过解耦来将系统划分为一些隔离良好的组件，以便尽可能长时间地为未来保留尽可能多的可选项。可以按层解耦和按用例解耦：</p>
+<ul>
+<li>按层解耦：一个系统可以被解耦成若干个水平分层——UI界面、应用独有的业务逻辑、领域普适的业务逻辑、数据库等。</li>
+<li>按用例解耦：用例是上述系统水平分层的一个个垂直切片。</li>
+</ul>
+<p>一个系统有很多种方式按水平分层和用例解耦：</p>
+<ul>
+<li>源码层次：控制源代码模块之间的依赖关系，以此来实现一个模块的变更不会导致其他模块也需要变更或重新编译。</li>
+<li>部署层次：控制部署单元之间的依赖关系，以此来实现一个模块的变更不会导致其他模块的重新构建和部署。</li>
+<li>服务层次：将组件间的依赖关系降低到数据结构级别，然后仅通过网络数据包来进行通信。</li>
+</ul>
+<p>解耦推行到某种一旦有需要就可以随时转变为服务的程度即可，让整个程序尽量长时间地保持单体结构，以便给未来留下可选项。</p>
+<h3 id="31-好的架构设计">3.1 好的架构设计</h3>
+<p>软件架构设计本身就是一门划分边界的艺术。边界的作用是将软件分割成各种元素，以便约束边界两侧之间的依赖关系。边界线应该画在那些不相关的事情中间。比如 GUI、业务逻辑和数据库之间都有边界。</p>
+<p>边界将策略彼此分离，将它们按照变更的方式进行重新分组，构成不同的层次。层次按照输入与输出之间的距离来定义，一条策略距离系统的输入/输出越远，它所属的层次就越高。而直接管理输入/输出的策略在系统中的层次是最低的。设计良好的架构中，源码中的依赖方向都统一调整为指向高层策略没，这样针对系统低层组件的紧急小修改几乎不会影响高层组件。从另一个角度来说，低层组件应该成为高层组件的插件。这种依赖方式是通常采用依赖反转原则（DIP）来实现。</p>
+<p>良好的架构和框架无关，设计应该围绕着用例来展开，着重于展示系统本身的设计。</p>
+<p>整洁架构按照不同关注点把软件切割成不通的层，至少有一层是只包含该软件的业务逻辑的，而用户接口、系统接口则属于其他层。按照这些架构设计出来的系统，都有着可被测试，且独立于框架、UI、数据库以及任何外部机构的特点。</p>
+<p><img src="https://raw.githubusercontent.com/LeewayHsu/leewayhsu.github.io/master/images/clean-architecture.png" alt=""></p>
+<p>图中每一圈都代表了软件系统中的不同层次，靠近中心，其所在的软件层次就越高。基本上，外层圆代表的是机制，内层圆代表的是策略。源码中的依赖关系必须只指向同心圆的内层，即由低层机制指向高层策略。</p>
+<h3 id="32-业务逻辑">3.2 业务逻辑</h3>
+<p>业务逻辑就是程序中那些真正用于赚钱或省钱的业务逻辑与过程。业务逻辑通常会需要处理一些数据，称为业务数据，这些数据无论自动化程序存在与否，都必须要存在。</p>
+<h4 id="关键业务逻辑">关键业务逻辑</h4>
+<p>关键业务逻辑和关键业务数据是紧密相关的，所以很适合被放在同一个对象中处理，这种对象称为业务实体。业务实体的接口层则是由那些实现关键业务逻辑、操作关键业务数据的函数组成的。</p>
+<h4 id="用例">用例</h4>
+<p>并不是所有的业务逻辑都是一个纯粹的业务实体。有些业务逻辑只有在作为自动化系统的一部分时才有意义，这些业务逻辑就是用例。用例本质上就是关于如何操作一个自动化系统的描述，它定义了用户需要提供的输入数据、用户应该得到的输出信息以及产生输出所应该采取的处理步骤。当然，用例所描述的是某种特定应用情景下的业务逻辑，它并非业务实体中所包含的关键业务逻辑。</p>
+<p>用例并不描述系统与用户之间的接口，它只描述该应用在某些特定情景下的业务逻辑，这些业务逻辑所规范的是用户与业务实体之间的交互方式，它与数据流入/流出系统的方式无关。</p>
+<p>用例本身也是一个对象，该对象中包含了一个或多个实现了特定应用情景的业务逻辑函数。当然除此之外，用例对象中也包含了输入数据、输出数据以及相关业务实体的引用，以方便调用。业务实体并不会知道是哪个业务用例在控制它们，这也是依赖反转原则（DIP）的另一个应用情景。</p>
+<p>之所以业务实体属于高层概念而用例属于低层概念。是因为用例描述的是一个特定的应用情景，这样一来，用例必然会更靠近系统的输入和输出。而业务实体是一个可以适用于多个应用情景的一般化概念，相对地离系统的输入和输出更远。所以，用例依赖于业务实体，而业务实体并不依赖于用例。</p>
+<h3 id="33-请求和响应模型">3.3 请求和响应模型</h3>
+<p>在通常情况下，用例会接收输入数据，并产生输出数据。但在一个设计良好的架构中，用例对象通常不应该知道数据展现给用户或者其他组件的方式。用例类所接收的输入应该是一个简单的请求性数据结构，而返回输出的应该是一个简单的响应性数据结构。这些数据结构中不应该存在任何依赖关系。这些数据接口不应该了解任何有关用户界面的细节。</p>
+<p>请求和响应的数据结构中不应该使用对业务实体对象的引用。这两个对象存在的意义是不一样的，它们发生变化的原因和速率也是不一样的，所以把它们整合在一起是对共同闭包原则（CCP）和单一职责原则（SRP）的违反。这样做的后果，往往会导致代码中出现很多分支判断语句和中间数据。</p>
+<h3 id="34-跨边界的数据结构">3.4 跨边界的数据结构</h3>
+<p>会跨越边界的数据在数据结构上都是很简单的。可以采用一些基本的结构体或简单的可传输数据对象，或者直接通过函数调用的参数来传递数据，也可以将数据放入哈希表，或整合成某种对象。这里最重要的是这个跨边界传输的对象应该有一个独立简单的数据结构。不要直接传递业务实体或数据库记录对象。同时，这些传递的数据结构中也不应该存在违反依赖规则的依赖关系。</p>
+<h3 id="35-谦卑对象humble-object">3.5 谦卑对象（humble object）</h3>
+<p>谦卑对象模式最初的设计目的是帮助单元测试的编写者区分容易测试的行为与难以测试的行为，并将它们隔离。其设计思路非常简单，就是将这两类行为拆分成两组模块或类。其中一组模块被称为谦卑（Humble）组，包含了系统中所有难以测试的行为，而这些行为已经被简化到不能再简化了。另一组模块则包含了所有不属于谦卑对象的行为。</p>
+<p>GUI 就可以通过这种方式分为展示器和视图：</p>
+<ul>
+<li>展示器则是可测试的对象。展示器的工作是负责从应用程序中接收数据，然后按视图的需要将这些数据格式化，以便视图将其呈现在屏幕上。</li>
+<li>视图部分属于难以测试的谦卑对象，视图部分除了加载视图模型所需要的值，不应该再做任何其他事情。</li>
+</ul>
+<p>强大的可测试性是一个架构的设计是否优秀的显著衡量标准之一。谦卑对象模式就是这方面的一个非常好的例子。将系统行为分割成可测试和不可测试两部分的过程常常就也定义了系统的架构边界。</p>
+<h3 id="36-不完全边界">3.6 不完全边界</h3>
+<p>构建完整的架构边界是一件很耗费成本的事。在这个过程中，需要为系统设计双向的多态边界接口，用于输入和输出的数据结构，以及所有相关的依赖关系管理，以便将系统分割成可独立编译与部署的组件。这里会涉及大量的前期工作，以及大量的后期维护工作。</p>
+<p>在很多情况下，一位优秀的架构师都会认为设计架构边界的成本太高了——但为了应对将来可能的需要，通常还是希望预留一个边界。</p>
+<p>但这种预防性设计在敏捷社区里是饱受诟病的，因为它显然违背了YAGNI原则（“You Aren&rsquo;t Going to Need It”，意即“不要预测未来的需要”）。然而，架构师的工作本身就是要做这样的预见性设计，这时候，我们就需要引入不完全边界（partial boundary）的概念了。</p>
+<h4 id="省掉最后一步">省掉最后一步</h4>
+<p>构建不完全边界的一种方式就是在将系统分割成一系列可以独立编译、独立部署的组件之后，再把它们构建成一个组件。换句话说，在将系统中所有的接口、用于输入/输出的数据格式等每一件事都设置好之后，仍选择将它们统一编译和部署为一个组件。显然，这种不完全边界所需要的代码量以及设计的工作量，和设计完整边界时是完全一样的。但它省去了多组件管理这部分的工作，这就等于省去了版本号管理和发布管理方面的工作——这其中的工作量其实可不小。</p>
+<h4 id="单向边界">单向边界</h4>
+<p>在设计一套完整的系统架构边界时，往往需要用反向接口来维护边界两侧组件的隔离性。而且，维护这种双向的隔离性，通常不会是一次性的工作，它需要我们持续地长期投入资源维护下去。</p>
+<p>可以采用单向边界的方式，比如下图是一个临时占位的，将来可被替换成完整架构边界的更简单的结构。这个结构采用了传统的策略模式，其Client使用的是一个由ServiceImpl类实现的ServiceBoundary接口。</p>
+<p><img src="https://img2020.cnblogs.com/blog/156377/202112/156377-20211208205308368-1132964951.png" alt=""></p>
+<p>上述设计为未来构建完整的系统架构边界打下了坚实基础。为了未来将Client与ServiceImpl隔离，必要的依赖反转已经做完了。同时也能清楚地看到，图中的虚线箭头代表了未来有可能很快就会出现的隔离问题。由于没有采用双向反向接口，这部分就只能依赖开发者和架构师的自律性来保证组件持久隔离了。</p>
+<h4 id="门户模式facade-pattern">门户模式（facade pattern）</h4>
+<p>一个更简单的架构边界设计是采用门户模式（facade pattern）。在这种模式下，连依赖反转的工作都可以省了。这里的边界将只能由Facade类来定义，这个类的背后是一份包含了所有服务函数的列表，它会负责将Client的调用传递给对Client不可见的服务函数。</p>
+<p>需要注意的是，在该设计中，Client会传递性地依赖于所有的Service类。在静态类型语言中，这就意味着对Service类的源码所做的任何修改都会导致Client的重新编译。</p>
+<h3 id="37-main-组件">3.7 Main 组件</h3>
+<p>Main 组件是系统中最细节化的部分——也就是底层的策略，它是整个系统的初始点。在整个系统中，除了操作系统不会再有其他组件依赖于它了。Main 组件的任务是创建所有的工厂类、策略类以及其他的全局设施，并最终将系统的控制权转交给最高抽象层的代码来处理。</p>
+<p>Main 组件中的依赖关系通常应该由依赖注入框架来注入。在该框架将依赖关系注入到 Main 组件之后，Main 组件就应该可以在不依赖于该框架的情况下自行分配这些依赖关系了。</p>
+<p>Main 组件也可以被视为应用程序的一个插件——这个插件负责设置起始状态、配置信息、加载外部资源，最后将控制权转交给应用程序的其他高层组件。另外，由于 Main 组件能以插件形式存在于系统中，因此可以为一个系统设计多个 Main 组件，让它们各自对应于不同的配置。</p>
+</div>
+    <div class="post__footer">
+      
+
+      
+    </div>
+
+    
+  </div>
+
+
+      </main>
+    </div><footer class="footer footer__base">
+  <ul class="footer__list">
+    <li class="footer__item">
+      &copy;
+      
+        Liwei Xu
+        2022
+
+
+      
+    </li>
+    
+  </ul>
+</footer>
+  
+  <script
+    type="text/javascript"
+    src="/js/medium-zoom.min.1248fa75275e5ef0cbef27e8c1e27dc507c445ae3a2c7d2ed0be0809555dac64.js"
+    integrity="sha256-Ekj6dSdeXvDL7yfoweJ9xQfERa46LH0u0L4ICVVdrGQ="
+    crossorigin="anonymous"
+  ></script></body>
+</html>

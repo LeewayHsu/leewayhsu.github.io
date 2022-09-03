@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html
+  dir="ltr"
+  lang="en"
+  data-theme=""
+  class="html"
+><head>
+  <title>
+    Liwei Xu
+        |
+        对象池模式
+
+
+      
+
+
+    
+
+  </title>
+
+  
+  <meta charset="utf-8" /><meta name="generator" content="Hugo 0.102.3" /><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="author" content="Liwei Xu" />
+  <meta
+    name="description"
+    content=""
+  />
+  
+  
+    
+    
+    <link
+      rel="stylesheet"
+      href="/scss/main.min.b2e0cb07595e3519ab1193bb421914e06c0e26b0cc561fef23b3c6131d4d2ffa.css"
+      integrity="sha256-suDLB1leNRmrEZO7QhkU4GwOJrDMVh/vI7PGEx1NL/o="
+      crossorigin="anonymous"
+      type="text/css"
+    />
+
+  
+
+  
+  <link
+    rel="stylesheet"
+    href="/css/markupHighlight.min.31b0a1f317f55c529a460897848c97436bb138b19c399b37de70d463a8bf6ed5.css"
+    integrity="sha256-MbCh8xf1XFKaRgiXhIyXQ2uxOLGcOZs33nDUY6i/btU="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  
+  <link
+    rel="stylesheet"
+    href="/fontawesome/css/fontawesome.min.7f3c2281c7f965ce3c64888aa452793252a0416909c181097f81d0a0f7d1624e.css"
+    integrity="sha256-fzwigcf5Zc48ZIiKpFJ5MlKgQWkJwYEJf4HQoPfRYk4="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  <link
+    rel="stylesheet"
+    href="/fontawesome/css/solid.min.35fc032da8ede6681675d20a2f862fb9e1045c1d512d495fcf862c054daffef2.css"
+    integrity="sha256-NfwDLajt5mgWddIKL4YvueEEXB1RLUlfz4YsBU2v/vI="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  <link
+    rel="stylesheet"
+    href="/fontawesome/css/regular.min.3b92357925ea7284f0c6b0378396f39f470f7842ed9702f337e667c4026bf837.css"
+    integrity="sha256-O5I1eSXqcoTwxrA3g5bzn0cPeELtlwLzN&#43;ZnxAJr&#43;Dc="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  <link
+    rel="stylesheet"
+    href="/fontawesome/css/brands.min.ebb1096e1976e8cc4e2532cfa050b8f30eb13b8eb06be5cee3e38eb426b838ea.css"
+    integrity="sha256-67EJbhl26MxOJTLPoFC48w6xO46wa&#43;XO4&#43;OOtCa4OOo="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+
+  <link rel="canonical" href="https://xuliwei.xzy/posts/object-pool-pattern/" />
+
+  
+  
+  
+  
+  <script
+    type="text/javascript"
+    src="/js/anatole-header.min.f9132794301a01ff16550ed66763482bd848f62243d278f5e550229a158bfd32.js"
+    integrity="sha256-&#43;RMnlDAaAf8WVQ7WZ2NIK9hI9iJD0nj15VAimhWL/TI="
+    crossorigin="anonymous"
+  ></script>
+
+  
+    
+    
+    <script
+      type="text/javascript"
+      src="/js/anatole-theme-switcher.min.738c0e3a493854876aeab9e2316fd43f1936aeeac4cc6b3e60bb26456dba72ad.js"
+      integrity="sha256-c4wOOkk4VIdq6rniMW/UPxk2rurEzGs&#43;YLsmRW26cq0="
+      crossorigin="anonymous"
+    ></script>
+
+  
+
+  
+
+
+  
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="对象池模式"/>
+<meta name="twitter:description" content="对象池模式是一种 creational 设计模式。该模式下，池中所包含的对象将不再是每次需要时创建，使用完毕后销毁，而是初始化好后放入池中等待使用。使用该池的 client 每次需要时都会向对象池请求一个对象，在上面进行一些操作，使用完之后返回给对象池。这个过程可以是手动执行"/>
+
+
+
+  
+  <meta property="og:title" content="对象池模式" />
+<meta property="og:description" content="对象池模式是一种 creational 设计模式。该模式下，池中所包含的对象将不再是每次需要时创建，使用完毕后销毁，而是初始化好后放入池中等待使用。使用该池的 client 每次需要时都会向对象池请求一个对象，在上面进行一些操作，使用完之后返回给对象池。这个过程可以是手动执行" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://xuliwei.xzy/posts/object-pool-pattern/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2018-04-10T22:36:21+08:00" />
+<meta property="article:modified_time" content="2018-04-10T22:36:21+08:00" /><meta property="og:site_name" content="只言片语" />
+
+
+
+
+  
+  
+  
+  
+  <script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "articleSection": "posts",
+        "name": "对象池模式",
+        "headline": "对象池模式",
+        "alternativeHeadline": "",
+        "description": "
+      
+        对象池模式是一种 creational 设计模式。该模式下，池中所包含的对象将不再是每次需要时创建，使用完毕后销毁，而是初始化好后放入池中等待使用。使用该池的 client 每次需要时都会向对象池请求一个对象，在上面进行一些操作，使用完之后返回给对象池。这个过程可以是手动执行
+
+
+      
+
+
+    ",
+        "inLanguage": "en-us",
+        "isFamilyFriendly": "true",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/xuliwei.xzy\/posts\/object-pool-pattern\/"
+        },
+        "author" : {
+            "@type": "Person",
+            "name": "Liwei Xu"
+        },
+        "creator" : {
+            "@type": "Person",
+            "name": "Liwei Xu"
+        },
+        "accountablePerson" : {
+            "@type": "Person",
+            "name": "Liwei Xu"
+        },
+        "copyrightHolder" : {
+            "@type": "Person",
+            "name": "Liwei Xu"
+        },
+        "copyrightYear" : "2018",
+        "dateCreated": "2018-04-10T22:36:21.00Z",
+        "datePublished": "2018-04-10T22:36:21.00Z",
+        "dateModified": "2018-04-10T22:36:21.00Z",
+        "publisher":{
+            "@type":"Organization",
+            "name": "Liwei Xu",
+            "url": "https://xuliwei.xzy",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https:\/\/xuliwei.xzyfavicon-32x32.png",
+                "width":"32",
+                "height":"32"
+            }
+        },
+        "image": 
+      [
+      ]
+
+    ,
+        "url" : "https:\/\/xuliwei.xzy\/posts\/object-pool-pattern\/",
+        "wordCount" : "1083",
+        "genre" : [ ],
+        "keywords" : [ ]
+    }
+  </script>
+
+
+
+</head>
+<body
+    
+      class="body theme--light"
+
+    
+  >
+    <div class="wrapper">
+      <aside
+        
+          class="wrapper__sidebar"
+
+        
+      ><div
+  class="sidebar
+    animated fadeInDown
+
+  "
+>
+  <div class="sidebar__content">
+    <div class="sidebar__introduction">
+      <img
+        class="sidebar__introduction-profileimage"
+        src="/images/profile.jpg"
+        alt="profile picture"
+      />
+      
+        <div class="sidebar__introduction-title">
+          <a href="/">只言片语</a>
+        </div>
+
+      
+      <div class="sidebar__introduction-description">
+        <p></p>
+      </div>
+    </div>
+    <ul class="sidebar__list">
+      
+    </ul>
+  </div><footer class="footer footer__sidebar">
+  <ul class="footer__list">
+    <li class="footer__item">
+      &copy;
+      
+        Liwei Xu
+        2022
+
+
+      
+    </li>
+    
+  </ul>
+</footer>
+  
+  <script
+    type="text/javascript"
+    src="/js/medium-zoom.min.1248fa75275e5ef0cbef27e8c1e27dc507c445ae3a2c7d2ed0be0809555dac64.js"
+    integrity="sha256-Ekj6dSdeXvDL7yfoweJ9xQfERa46LH0u0L4ICVVdrGQ="
+    crossorigin="anonymous"
+  ></script></div>
+</aside>
+      <main
+        
+          class="wrapper__main"
+
+        
+      >
+        <header class="header"><div
+  class="
+    animated fadeInDown
+
+  "
+>
+  <a role="button" class="navbar-burger" data-target="navMenu" aria-label="menu" aria-expanded="false">
+    <span aria-hidden="true" class="navbar-burger__line"></span>
+    <span aria-hidden="true" class="navbar-burger__line"></span>
+    <span aria-hidden="true" class="navbar-burger__line"></span>
+  </a>
+  <nav class="nav">
+    <ul class="nav__list" id="navMenu">
+      
+      
+        
+        
+          <li class="nav__list-item">
+            <a
+              
+              href="/"
+              
+              title=""
+              >Home</a
+            >
+          </li>
+
+        
+
+
+      
+    </ul>
+    <ul class="nav__list nav__list--end">
+      
+      
+        <li class="nav__list-item">
+          <div class="themeswitch">
+            <a title="Switch Theme">
+              <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a>
+          </div>
+        </li>
+
+      
+    </ul>
+  </nav>
+</div>
+</header>
+  <div
+    class="post 
+      animated fadeInDown
+
+    "
+  >
+    
+    <div class="post__content">
+      <h1>对象池模式</h1>
+      <p>对象池模式是一种 creational 设计模式。该模式下，池中所包含的对象将不再是每次需要时创建，使用完毕后销毁，而是初始化好后放入池中等待使用。使用该池的 client 每次需要时都会向对象池请求一个对象，在上面进行一些操作，使用完之后返回给对象池。这个过程可以是手动执行或自动执行。使用对象池的目的主要是为了提升性能，尤其是当需要和一些创建昂贵但使用时间不长的对象打交道时。</p>
+<p>初始状态下，池模式创建了一个可复用的初始化好的对象的集合。当 client 需要一个新对象时，它会向对象池发起请求，如果已经有可使用的对象，则立刻返回一个对象。如果当前池中没有可使用的对象，则会创建一个然后返回。一些对象池使用的资源型的对象会有最大个数限制，如果达到个数后有新的请求时，可以选择抛出异常，或 block 当前请求的线程直到有对象可使用，也可以提升对象池的限制数。</p>
+<p>对象池模式的常见使用场景是数据库连接池、网络连接池和线程池等，也可以用在使用第三方资源的地方。</p>
+<p>注意事项：</p>
+<ul>
+<li>如果创建对象的代价不昂贵，则无需使用。否则反而浪费内存。</li>
+<li>使用完毕后返回对象时，不应该存在对它的引用。</li>
+<li>返回的对象应该清除自身的状态，否则可能会引起几个问题，一个是上一个 client 的一些状态（比如认证信息等）给了下一个 client，还有就是上一个 client 的一些隐私数据泄露给了下一个 client。</li>
+<li>一定要考虑线程安全。</li>
+</ul>
+<h2 id="实现">实现</h2>
+<p>对象池在 C++ 中可以用过 smart pointer 实现。在有 GC 的语言中，由于没有 destructor 的存在，所以要手动实现。不建议使用 <code>finalizer</code> 来归还对象，因为不能确保它什么时候执行。可以使用 <code>using</code> 和 <code>try...finnally</code> 来保证即使抛出异常了也能正常归还对象。</p>
+<h3 id="c-中的实现">C# 中的实现</h3>
+<p>C# 中可以使用 <code>List&lt;T&gt;</code> 配合锁来实现，由于 <code>List&lt;T&gt;</code> 不是线程安全的，所以要注意多线程的情况。虽然麻烦点，但可以跟踪每一个对象的引用，适用于资源有严格限制的情况：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C#" data-lang="C#"><span style="display:flex;"><span><span style="color:#66d9ef">using</span> System;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">using</span> System.Collections.Generic;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">namespace</span> ObjectPoolPattern
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ObjectPool</span>&lt;T&gt;
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">private</span> List&lt;T&gt; _available;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">private</span> List&lt;T&gt; _inUse;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">private</span> Func&lt;T&gt; _objectGenerator;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">private</span> Action&lt;T&gt; _objectReset;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">int</span> _max;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">public</span> ObjectPool(Func&lt;T&gt; objectGenerator, Action&lt;T&gt; objectReset, <span style="color:#66d9ef">int</span> max)
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            _objectGenerator = objectGenerator;
+</span></span><span style="display:flex;"><span>            _objectReset = objectReset;
+</span></span><span style="display:flex;"><span>            _max = max;
+</span></span><span style="display:flex;"><span>            _available = <span style="color:#66d9ef">new</span> List&lt;T&gt;();
+</span></span><span style="display:flex;"><span>            _inUse = <span style="color:#66d9ef">new</span> List&lt;T&gt;();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">public</span> T GetObject()
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">lock</span> (_available)
+</span></span><span style="display:flex;"><span>            {
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> (_available.Count != <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>                {
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">var</span> item = _available[<span style="color:#ae81ff">0</span>];
+</span></span><span style="display:flex;"><span>                    _inUse.Add(item);
+</span></span><span style="display:flex;"><span>                    _available.RemoveAt(<span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">return</span> item;
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">else</span>
+</span></span><span style="display:flex;"><span>                {
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">if</span> (_inUse.Count == _max)
+</span></span><span style="display:flex;"><span>                    {
+</span></span><span style="display:flex;"><span>                        <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> Exception(<span style="color:#e6db74">&#34;没有可用资源&#34;</span>);
+</span></span><span style="display:flex;"><span>                    }
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">var</span> newItem = _objectGenerator();
+</span></span><span style="display:flex;"><span>                    _inUse.Add(newItem);
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">return</span> newItem;
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> ReleaseObject(T item)
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            _objectReset(item);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">lock</span> (_available)
+</span></span><span style="display:flex;"><span>            {
+</span></span><span style="display:flex;"><span>                _available.Add(item);
+</span></span><span style="display:flex;"><span>                _inUse.Remove(item);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>也可以用 <code>ConcurrentBag</code> 类来实现一个简单的，因为它<a href="https://docs.microsoft.com/en-us/dotnet/standard/collections/thread-safe/">更安全并且效率更高</a>，对于资源不是有限，只是单纯为了减少创建和销毁对象的消耗的情况比较适用，因为实现简单，不需要用到锁：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C#" data-lang="C#"><span style="display:flex;"><span><span style="color:#66d9ef">using</span> System;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">using</span> System.Collections.Concurrent;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">namespace</span> ObjectPoolPattern
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ObjectPool</span>&lt;T&gt;
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">private</span> ConcurrentBag&lt;T&gt; _objects;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">private</span> Func&lt;T&gt; _objectGenerator;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">public</span> ObjectPool(Func&lt;T&gt; objectGenerator, Action&lt;T&gt; objectReset,)
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> (objectGenerator == <span style="color:#66d9ef">null</span>) <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> ArgumentNullException(<span style="color:#e6db74">&#34;objectGenerator&#34;</span>);
+</span></span><span style="display:flex;"><span>            _objects = <span style="color:#66d9ef">new</span> ConcurrentBag&lt;T&gt;();
+</span></span><span style="display:flex;"><span>            _objectGenerator = objectGenerator;
+</span></span><span style="display:flex;"><span>            _objectReset = objectReset;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">public</span> T GetObject()
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            T item;
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> (_objects.TryTake(<span style="color:#66d9ef">out</span> item)) <span style="color:#66d9ef">return</span> item;
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> _objectGenerator();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> PutObject(T item)
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>             _objectReset(item);
+</span></span><span style="display:flex;"><span>            _objects.Add(item);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>StackOverflow 上<a href="https://stackoverflow.com/a/30664859">有人推荐</a>用 .NET Core 中 <a href="https://docs.microsoft.com/zh-cn/dotnet/api/system.buffers?view=netcore-2.1">System.Buffers</a> 提供的 <code>ArrayPool&lt;T&gt;</code> 来实现对象池。不过按照这个类型本来的目的是给 <a href="https://github.com/dotnet/corefx/issues/4547">primitive 或 struct-based</a> 类型使用的一个 Buffer，并不是给昂贵资源的对象用的，这里就不介绍了，可以参考<a href="http://adamsitnik.com/Array-Pool/">这里</a>。</p>
+<h2 id="参考">参考</h2>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Object_pool_pattern">https://en.wikipedia.org/wiki/Object_pool_pattern</a></li>
+</ul>
+</div>
+    <div class="post__footer">
+      
+
+      
+    </div>
+
+    
+  </div>
+
+
+      </main>
+    </div><footer class="footer footer__base">
+  <ul class="footer__list">
+    <li class="footer__item">
+      &copy;
+      
+        Liwei Xu
+        2022
+
+
+      
+    </li>
+    
+  </ul>
+</footer>
+  
+  <script
+    type="text/javascript"
+    src="/js/medium-zoom.min.1248fa75275e5ef0cbef27e8c1e27dc507c445ae3a2c7d2ed0be0809555dac64.js"
+    integrity="sha256-Ekj6dSdeXvDL7yfoweJ9xQfERa46LH0u0L4ICVVdrGQ="
+    crossorigin="anonymous"
+  ></script></body>
+</html>

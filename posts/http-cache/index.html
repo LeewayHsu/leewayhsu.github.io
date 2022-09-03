@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html
+  dir="ltr"
+  lang="en"
+  data-theme=""
+  class="html"
+><head>
+  <title>
+    Liwei Xu
+        |
+        聊聊 HTTP 缓存
+
+
+      
+
+
+    
+
+  </title>
+
+  
+  <meta charset="utf-8" /><meta name="generator" content="Hugo 0.102.3" /><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="author" content="Liwei Xu" />
+  <meta
+    name="description"
+    content=""
+  />
+  
+  
+    
+    
+    <link
+      rel="stylesheet"
+      href="/scss/main.min.b2e0cb07595e3519ab1193bb421914e06c0e26b0cc561fef23b3c6131d4d2ffa.css"
+      integrity="sha256-suDLB1leNRmrEZO7QhkU4GwOJrDMVh/vI7PGEx1NL/o="
+      crossorigin="anonymous"
+      type="text/css"
+    />
+
+  
+
+  
+  <link
+    rel="stylesheet"
+    href="/css/markupHighlight.min.31b0a1f317f55c529a460897848c97436bb138b19c399b37de70d463a8bf6ed5.css"
+    integrity="sha256-MbCh8xf1XFKaRgiXhIyXQ2uxOLGcOZs33nDUY6i/btU="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  
+  <link
+    rel="stylesheet"
+    href="/fontawesome/css/fontawesome.min.7f3c2281c7f965ce3c64888aa452793252a0416909c181097f81d0a0f7d1624e.css"
+    integrity="sha256-fzwigcf5Zc48ZIiKpFJ5MlKgQWkJwYEJf4HQoPfRYk4="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  <link
+    rel="stylesheet"
+    href="/fontawesome/css/solid.min.35fc032da8ede6681675d20a2f862fb9e1045c1d512d495fcf862c054daffef2.css"
+    integrity="sha256-NfwDLajt5mgWddIKL4YvueEEXB1RLUlfz4YsBU2v/vI="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  <link
+    rel="stylesheet"
+    href="/fontawesome/css/regular.min.3b92357925ea7284f0c6b0378396f39f470f7842ed9702f337e667c4026bf837.css"
+    integrity="sha256-O5I1eSXqcoTwxrA3g5bzn0cPeELtlwLzN&#43;ZnxAJr&#43;Dc="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  <link
+    rel="stylesheet"
+    href="/fontawesome/css/brands.min.ebb1096e1976e8cc4e2532cfa050b8f30eb13b8eb06be5cee3e38eb426b838ea.css"
+    integrity="sha256-67EJbhl26MxOJTLPoFC48w6xO46wa&#43;XO4&#43;OOtCa4OOo="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+
+  <link rel="canonical" href="https://xuliwei.xzy/posts/http-cache/" />
+
+  
+  
+  
+  
+  <script
+    type="text/javascript"
+    src="/js/anatole-header.min.f9132794301a01ff16550ed66763482bd848f62243d278f5e550229a158bfd32.js"
+    integrity="sha256-&#43;RMnlDAaAf8WVQ7WZ2NIK9hI9iJD0nj15VAimhWL/TI="
+    crossorigin="anonymous"
+  ></script>
+
+  
+    
+    
+    <script
+      type="text/javascript"
+      src="/js/anatole-theme-switcher.min.738c0e3a493854876aeab9e2316fd43f1936aeeac4cc6b3e60bb26456dba72ad.js"
+      integrity="sha256-c4wOOkk4VIdq6rniMW/UPxk2rurEzGs&#43;YLsmRW26cq0="
+      crossorigin="anonymous"
+    ></script>
+
+  
+
+  
+
+
+  
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="聊聊 HTTP 缓存"/>
+<meta name="twitter:description" content="缓存是计算机世界中最常见的概念，从底层的 CPU 的缓存到应用层面的 Web 服务器缓存以及分布式的 Redis 和 Memcached 缓存。缓存存在的作用主要是为了以较小的空间代价提升较大的时间节省，当然前提是类似于二八原则这样的原理生效并且加以较好的策略来配置缓存。 本文谈的缓存是实"/>
+
+
+
+  
+  <meta property="og:title" content="聊聊 HTTP 缓存" />
+<meta property="og:description" content="缓存是计算机世界中最常见的概念，从底层的 CPU 的缓存到应用层面的 Web 服务器缓存以及分布式的 Redis 和 Memcached 缓存。缓存存在的作用主要是为了以较小的空间代价提升较大的时间节省，当然前提是类似于二八原则这样的原理生效并且加以较好的策略来配置缓存。 本文谈的缓存是实" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://xuliwei.xzy/posts/http-cache/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2019-01-05T15:36:21+08:00" />
+<meta property="article:modified_time" content="2019-01-05T15:36:21+08:00" /><meta property="og:site_name" content="只言片语" />
+
+
+
+
+  
+  
+  
+  
+  <script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "articleSection": "posts",
+        "name": "聊聊 HTTP 缓存",
+        "headline": "聊聊 HTTP 缓存",
+        "alternativeHeadline": "",
+        "description": "
+      
+        缓存是计算机世界中最常见的概念，从底层的 CPU 的缓存到应用层面的 Web 服务器缓存以及分布式的 Redis 和 Memcached 缓存。缓存存在的作用主要是为了以较小的空间代价提升较大的时间节省，当然前提是类似于二八原则这样的原理生效并且加以较好的策略来配置缓存。 本文谈的缓存是实
+
+
+      
+
+
+    ",
+        "inLanguage": "en-us",
+        "isFamilyFriendly": "true",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/xuliwei.xzy\/posts\/http-cache\/"
+        },
+        "author" : {
+            "@type": "Person",
+            "name": "Liwei Xu"
+        },
+        "creator" : {
+            "@type": "Person",
+            "name": "Liwei Xu"
+        },
+        "accountablePerson" : {
+            "@type": "Person",
+            "name": "Liwei Xu"
+        },
+        "copyrightHolder" : {
+            "@type": "Person",
+            "name": "Liwei Xu"
+        },
+        "copyrightYear" : "2019",
+        "dateCreated": "2019-01-05T15:36:21.00Z",
+        "datePublished": "2019-01-05T15:36:21.00Z",
+        "dateModified": "2019-01-05T15:36:21.00Z",
+        "publisher":{
+            "@type":"Organization",
+            "name": "Liwei Xu",
+            "url": "https://xuliwei.xzy",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https:\/\/xuliwei.xzyfavicon-32x32.png",
+                "width":"32",
+                "height":"32"
+            }
+        },
+        "image": 
+      [
+      ]
+
+    ,
+        "url" : "https:\/\/xuliwei.xzy\/posts\/http-cache\/",
+        "wordCount" : "3000",
+        "genre" : [ ],
+        "keywords" : [ ]
+    }
+  </script>
+
+
+
+</head>
+<body
+    
+      class="body theme--light"
+
+    
+  >
+    <div class="wrapper">
+      <aside
+        
+          class="wrapper__sidebar"
+
+        
+      ><div
+  class="sidebar
+    animated fadeInDown
+
+  "
+>
+  <div class="sidebar__content">
+    <div class="sidebar__introduction">
+      <img
+        class="sidebar__introduction-profileimage"
+        src="/images/profile.jpg"
+        alt="profile picture"
+      />
+      
+        <div class="sidebar__introduction-title">
+          <a href="/">只言片语</a>
+        </div>
+
+      
+      <div class="sidebar__introduction-description">
+        <p></p>
+      </div>
+    </div>
+    <ul class="sidebar__list">
+      
+    </ul>
+  </div><footer class="footer footer__sidebar">
+  <ul class="footer__list">
+    <li class="footer__item">
+      &copy;
+      
+        Liwei Xu
+        2022
+
+
+      
+    </li>
+    
+  </ul>
+</footer>
+  
+  <script
+    type="text/javascript"
+    src="/js/medium-zoom.min.1248fa75275e5ef0cbef27e8c1e27dc507c445ae3a2c7d2ed0be0809555dac64.js"
+    integrity="sha256-Ekj6dSdeXvDL7yfoweJ9xQfERa46LH0u0L4ICVVdrGQ="
+    crossorigin="anonymous"
+  ></script></div>
+</aside>
+      <main
+        
+          class="wrapper__main"
+
+        
+      >
+        <header class="header"><div
+  class="
+    animated fadeInDown
+
+  "
+>
+  <a role="button" class="navbar-burger" data-target="navMenu" aria-label="menu" aria-expanded="false">
+    <span aria-hidden="true" class="navbar-burger__line"></span>
+    <span aria-hidden="true" class="navbar-burger__line"></span>
+    <span aria-hidden="true" class="navbar-burger__line"></span>
+  </a>
+  <nav class="nav">
+    <ul class="nav__list" id="navMenu">
+      
+      
+        
+        
+          <li class="nav__list-item">
+            <a
+              
+              href="/"
+              
+              title=""
+              >Home</a
+            >
+          </li>
+
+        
+
+
+      
+    </ul>
+    <ul class="nav__list nav__list--end">
+      
+      
+        <li class="nav__list-item">
+          <div class="themeswitch">
+            <a title="Switch Theme">
+              <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a>
+          </div>
+        </li>
+
+      
+    </ul>
+  </nav>
+</div>
+</header>
+  <div
+    class="post 
+      animated fadeInDown
+
+    "
+  >
+    
+    <div class="post__content">
+      <h1>聊聊 HTTP 缓存</h1>
+      <p>缓存是计算机世界中最常见的概念，从底层的 CPU 的缓存到应用层面的 Web 服务器缓存以及分布式的 Redis 和 Memcached 缓存。缓存存在的作用主要是为了以较小的空间代价提升较大的时间节省，当然前提是类似于二八原则这样的原理生效并且加以较好的策略来配置缓存。</p>
+<p>本文谈的缓存是实际后端编程中操作的不是很多的 HTTP 缓存。由于现在前后端分离的情况比较多，加上后端提供的接口都是动态的，实际工作中不需要太涉及关于 HTTP 缓存的内容。不过 HTTP 协议中的缓存在实际的应用中还是很重要的，作为一个开发人员还是要掌握其中的概念和一些主要的用法。</p>
+<p>首先明确的一点是本文中缓存的定义，这里缓存的定义是提供文本副本的设备，最接近用户的缓存是浏览器自带的缓存，其他的则包括网络传输中的各个具有存储文档副本的中间设备。</p>
+<h2 id="缓存设备的工作原理">缓存设备的工作原理</h2>
+<p>缓存设备的工作原理在于，每当缓存设备接收要用户发来的请求时，会查看本地有没有相应的文档副本。如果有，就通过某种机制查看是否过期，如果没有过期就直接返回给用户，如果过期了就去原始服务器验证。同样原始服务器也通过某种机制验证后，结果分为两种情况，第一种情况是文档虽然在缓存设备上过期了，但是没有更改，此时返回 304，告诉缓存设备可以直接将本地存储的副本返回给用户，同时还会返回一个新的过期时间；第二种情况是文档不仅在缓存设备上过期了，还发生了更改，便返回200，同时在 body 里返回新的文档，此时缓存设备就将新的文档在本地存储一个副本，同时返回给用户。</p>
+<p>以上机制涉及到以下几个问题：</p>
+<ul>
+<li>缓存设备如何检查本地文档副本是否过期？</li>
+<li>缓存设备在本地文档副本过期后该怎么办？</li>
+<li>在整个缓存工作机制中，客户端可以做些什么？</li>
+</ul>
+<h2 id="缓存设备如何检查本地文档副本是否过期">缓存设备如何检查本地文档副本是否过期</h2>
+<p>缓存设备之所以能够敢拦截下用户的请求，不通知原始服务器就返回给副本，是因为在上一次它从原始服务器获得数据时，原始服务器通过某些首部告诉缓存设备，本次请求的文档，可不可以缓存，以及如果可以缓存的话可以缓存多久。这里涉及到的三个主要首部是：</p>
+<ul>
+<li>Cache-Control</li>
+<li>Pragma</li>
+<li>Expires</li>
+</ul>
+<p>首先，先来看能不能缓存，有两种不能缓存的情况，分别是 <code>Cache-Control: no-store</code> 和 <code>Cache-Control: no-cache</code>，以及后者的一个 HTTP 1.0 兼容：<code>Pragma: no-cache</code>。</p>
+<p><code>Cache-Control: no-store</code>  是最严格的，它除了不允许本次的文档副本被下一次当作缓存的数据响应给客户端，甚至都不允许缓存设备（包括浏览器）存储该文档，要求立刻这些中间设备向客户端响应请求后立刻删除本次的文档。
+<code>Cache-Control: no-cache</code>  和其 HTTP 1.0 兼容 <code>Pragma: no-cache</code> 则是允许缓存设备存储本次的文档，但是下次使用时，必须要跟原始服务器再验证一次才能决定该不该使用此文档副本响应给客户端。也许有人要问，既然都要去和原始服务器通信，那区别在什么地方呢？区别就在于，上一种情况中，缓存设备去跟原始服务器通信时，原始服务器要返回完整的文档才行，而这种情况下，如果原始服务器检查后发现文档未改动，可以只返回给缓存设备一个 304 响应，无需在 body 里放入文档，缓存设备就可以用自己本地存储的文档副本响应给客户端了。</p>
+<p>接下来就的问题就是，如果能缓存，那么缓存设备可以缓存文档多久呢？这里也分两种情况，一种是原始服务器指明了可以缓存的时间，一种是原始服务器没有指明的可以缓存的时间（当然了，也没有指明不能缓存）。</p>
+<p>原始服务器通过 <code>Cache-Control: max-age=&lt;s&gt;</code>  和 <code>Expires</code> 两个控制缓存的首部，以及本身和缓存无关的，表示文档产生时间的 <code>Date</code> 首部，来告诉缓存服务器可以缓存文档多长时间。</p>
+<p><code>Cache-Control: max-age=&lt;s&gt;</code>  和 <code>Expires</code>  首部都表示缓存设备可以缓存文档的时间，在整个时间内，缓存设备可以不跟原始服务器通信就直接返回副本（当然如果客户端强烈要求不要缓存的话另说）。前者是相对时间，单位是秒，后者是绝对时间。由于网络上不同的服务器时间不一致，因此强烈推荐使用前者。当然通过前者计算是否过期时，就需要用配合文档产生时间的 <code>Date</code> 首部来计算一个本地的过期时间才行。</p>
+<p>这里还有个首部要说下，就是 <code>Cache-Control: must-revalidate</code> 首部。这个首部有什么用呢？是这样的，虽然 max-age 指定了过期时间，但这并不是强制的，有些请求中的某些首部指明愿意接收稍微过期点的文档，这时候 <code>Cache-Control: must-revalidate</code> 首部的作用就体现出来了。它要求一旦过了 max-age 或 Expire 的时间，就必须进行再验证，不存在妥协的情况。所以它配合 max-age=0 相当于 no-cache。</p>
+<h2 id="缓存设备在本地文档副本过期后该怎么办">缓存设备在本地文档副本过期后该怎么办</h2>
+<p>上一节介绍了缓存设备如何判定其存储在本地的文档有没有过期，接下来的问题是，如果过期了该怎么办呢？这里需要缓存服务器做一个再验证的操作。再验证操作也是个 HTTP 请求，配合上专用的首部来达到目的。最常用的两个首部就是 <code>If-Modified-Since</code> 和 <code>If-None-Match</code>。</p>
+<p>首先是 <code>If-Modified-Since</code> 首部，当缓存设备向原始服务器发出再验证请求时，会在它后面加一个时间，表示如果文档在这个时间后更改过，那么请返回 200 的响应，并附上新的文档；如果没有修改过，那么请返回 304 响应。</p>
+<p><code>If-Modified-Since</code> 首部的时间是缓存设备自己定义的，不过，可以配合一个叫 <code>Last-Modified</code> 的响应首部一起工作。<code>Last-Modified</code> 响应首部表示本文档的上次修改时间，这样，缓存设备可以把上一次从原始服务器获得文档响应时的 <code>Last-Modified</code> 响应首部记录下来，用在再验证上。</p>
+<p>除了时间外，还可以通过文档的版本来验证，这个版本在 HTTP 里叫做实体标签。这里用到的就是 <code>If-None-Match</code> 首部。它也需要配合原始服务器在上一次的响应中附上的一个 <code>ETag</code> 首部。比如上一次获得文档时，有一个响应首部是 <code>ETag: &quot;1.0&quot;</code>，那么本次再验证时在首部中加上 <code>If-None-Match : &quot;1.0&quot;</code> 即可。</p>
+<h2 id="在整个缓存工作机制中客户端可以做些什么">在整个缓存工作机制中，客户端可以做些什么</h2>
+<p>有的时候我们希望本次请求获得的是原始服务器的文档，而不是中间缓存设备所存储的缓存文档。比如在开发时，如果更新了 JavaScript 文件，想在浏览器上看下效果（当然也可以通过在引用文件的地方加上时间戳保证获取的是最新文件）。此时我们都知道一般的浏览器可以通过 Ctrl+F5 的方式来达到目的，那这是怎么实现的呢？还有就是只按 F5 和 按 Ctrl+F5 有什么区别呢？</p>
+<p>首先明确的一点是，客户端对于这些刷新方式的机制是自己定义的，这里用的例子是 Chrome，如果是别的浏览器可能会不同。而客户端可以做的事情，也不是很多，因为毕竟客户端除了 HTTP 协议，没法以别的方式去影响缓存设备的决定。所以客户端还是得通过 HTTP 首部来表达自己的想法。前面提到的 <code>Cache-Control</code> 和 <code>Pragma: no-cache</code> 首部是通用首部，通用首部的意思就是请求和响应时都可以使用该首部。客户端在缓存工作机制中，也是靠这两个首部来做一些事情。</p>
+<p>当按 F5 时，浏览器会加一个 <code>cache-control: max-age=0</code> 的头。另外，如果本次刷新的文档，在上次响应时加了 <code>last-modified</code> 首部或 <code>ETag</code> 首部，那么还会附上这些首部，比如：</p>
+<pre tabindex="0"><code>cache-control: max-age=0
+if-modified-since: Thu, 26 Jan 2017 11:39:34 GMT
+if-none-match: &#34;CE82A0ADC34A0A90E9746697B9ECA38E&#34;
+</code></pre><p>当按 Ctrl+F5 时，浏览器会加上如下信息：</p>
+<pre tabindex="0"><code>cache-control: no-cache
+pragma: no-cache
+</code></pre><p>从这两种方式中 Chrome 发出的响应来看，其实 F5 和 Ctrl+F5 的区别也就是 <code>cache-control: max-age=0</code> 和 <code>cache-control: no-cache</code> 的区别了。这两种的区别在于，使用 <code>cache-control: max-age=0</code> 时，缓存设备使用的是再验证，如果之前有 <code>last-modified</code> 首部或 <code>ETag</code> 首部的话，它们会用这些信息去原始服务器验证，如果没有变化，依然还是会把自己缓存的副本发回给客户端，而 <code>cache-control: no-cache</code> 则不一样，请求的首部中加上它之后，所有的缓存设备都不得把自己的副本发送给客户端，而是一定要从原始服务器中获取，这点似乎和响应时的 <code>cache-control: no-cache</code> 不太一样。我在 HTTP 协议的文档中找到关于请求中这个首部的<a href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html#sec13.2.6">描述</a>：</p>
+<blockquote>
+<p>&hellip;include Cache-Control: max-age=0 to force any intermediate caches to validate their copies directly with the origin server, or Cache-Control: no-cache to force any intermediate caches to obtain a new copy from the origin server.</p>
+</blockquote>
+<h2 id="其他">其他</h2>
+<p>以上部分大致介绍了 HTTP 的缓存机制。其实上面介绍的这些都是 HTTP 中的强验证机制，除此之外，还有弱验证机制。弱验证机制会在请求时使用一些表示客户端能接受文档过期度的一些首部，这些内容我在工作中几乎没怎么接触过，所知道的也就是 HTTP 协议中提到的内容，没有实践过就不拿出来说了，有兴趣的可以直接去看 HTTP 1.1 协议的文档。</p>
+</div>
+    <div class="post__footer">
+      
+
+      
+    </div>
+
+    
+  </div>
+
+
+      </main>
+    </div><footer class="footer footer__base">
+  <ul class="footer__list">
+    <li class="footer__item">
+      &copy;
+      
+        Liwei Xu
+        2022
+
+
+      
+    </li>
+    
+  </ul>
+</footer>
+  
+  <script
+    type="text/javascript"
+    src="/js/medium-zoom.min.1248fa75275e5ef0cbef27e8c1e27dc507c445ae3a2c7d2ed0be0809555dac64.js"
+    integrity="sha256-Ekj6dSdeXvDL7yfoweJ9xQfERa46LH0u0L4ICVVdrGQ="
+    crossorigin="anonymous"
+  ></script></body>
+</html>

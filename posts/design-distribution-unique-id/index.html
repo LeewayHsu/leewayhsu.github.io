@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html
+  dir="ltr"
+  lang="en"
+  data-theme=""
+  class="html"
+><head>
+  <title>
+    Liwei Xu
+        |
+        设计分布式唯一ID
+
+
+      
+
+
+    
+
+  </title>
+
+  
+  <meta charset="utf-8" /><meta name="generator" content="Hugo 0.102.3" /><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="author" content="Liwei Xu" />
+  <meta
+    name="description"
+    content=""
+  />
+  
+  
+    
+    
+    <link
+      rel="stylesheet"
+      href="/scss/main.min.b2e0cb07595e3519ab1193bb421914e06c0e26b0cc561fef23b3c6131d4d2ffa.css"
+      integrity="sha256-suDLB1leNRmrEZO7QhkU4GwOJrDMVh/vI7PGEx1NL/o="
+      crossorigin="anonymous"
+      type="text/css"
+    />
+
+  
+
+  
+  <link
+    rel="stylesheet"
+    href="/css/markupHighlight.min.31b0a1f317f55c529a460897848c97436bb138b19c399b37de70d463a8bf6ed5.css"
+    integrity="sha256-MbCh8xf1XFKaRgiXhIyXQ2uxOLGcOZs33nDUY6i/btU="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  
+  <link
+    rel="stylesheet"
+    href="/fontawesome/css/fontawesome.min.7f3c2281c7f965ce3c64888aa452793252a0416909c181097f81d0a0f7d1624e.css"
+    integrity="sha256-fzwigcf5Zc48ZIiKpFJ5MlKgQWkJwYEJf4HQoPfRYk4="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  <link
+    rel="stylesheet"
+    href="/fontawesome/css/solid.min.35fc032da8ede6681675d20a2f862fb9e1045c1d512d495fcf862c054daffef2.css"
+    integrity="sha256-NfwDLajt5mgWddIKL4YvueEEXB1RLUlfz4YsBU2v/vI="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  <link
+    rel="stylesheet"
+    href="/fontawesome/css/regular.min.3b92357925ea7284f0c6b0378396f39f470f7842ed9702f337e667c4026bf837.css"
+    integrity="sha256-O5I1eSXqcoTwxrA3g5bzn0cPeELtlwLzN&#43;ZnxAJr&#43;Dc="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  <link
+    rel="stylesheet"
+    href="/fontawesome/css/brands.min.ebb1096e1976e8cc4e2532cfa050b8f30eb13b8eb06be5cee3e38eb426b838ea.css"
+    integrity="sha256-67EJbhl26MxOJTLPoFC48w6xO46wa&#43;XO4&#43;OOtCa4OOo="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+
+  <link rel="canonical" href="https://xuliwei.xzy/posts/design-distribution-unique-id/" />
+
+  
+  
+  
+  
+  <script
+    type="text/javascript"
+    src="/js/anatole-header.min.f9132794301a01ff16550ed66763482bd848f62243d278f5e550229a158bfd32.js"
+    integrity="sha256-&#43;RMnlDAaAf8WVQ7WZ2NIK9hI9iJD0nj15VAimhWL/TI="
+    crossorigin="anonymous"
+  ></script>
+
+  
+    
+    
+    <script
+      type="text/javascript"
+      src="/js/anatole-theme-switcher.min.738c0e3a493854876aeab9e2316fd43f1936aeeac4cc6b3e60bb26456dba72ad.js"
+      integrity="sha256-c4wOOkk4VIdq6rniMW/UPxk2rurEzGs&#43;YLsmRW26cq0="
+      crossorigin="anonymous"
+    ></script>
+
+  
+
+  
+
+
+  
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="设计分布式唯一ID"/>
+<meta name="twitter:description" content="一般而言，设计分布式唯一ID的话，会有这几个要求： 全局唯一 趋势递增，这样对于 InnoDB 这样的 B&#43;Tree 存储数据的可以保证写入的性能 单调递增，这样可以用作事务版本号、IM增量消息和排序等 不能连续，避免信息泄露，比如被爬虫顺序下载、用户ID和订单ID之类的被别"/>
+
+
+
+  
+  <meta property="og:title" content="设计分布式唯一ID" />
+<meta property="og:description" content="一般而言，设计分布式唯一ID的话，会有这几个要求： 全局唯一 趋势递增，这样对于 InnoDB 这样的 B&#43;Tree 存储数据的可以保证写入的性能 单调递增，这样可以用作事务版本号、IM增量消息和排序等 不能连续，避免信息泄露，比如被爬虫顺序下载、用户ID和订单ID之类的被别" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://xuliwei.xzy/posts/design-distribution-unique-id/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-12-03T18:36:21+08:00" />
+<meta property="article:modified_time" content="2021-12-03T18:36:21+08:00" /><meta property="og:site_name" content="只言片语" />
+
+
+
+
+  
+  
+  
+  
+  <script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "articleSection": "posts",
+        "name": "设计分布式唯一ID",
+        "headline": "设计分布式唯一ID",
+        "alternativeHeadline": "",
+        "description": "
+      
+        一般而言，设计分布式唯一ID的话，会有这几个要求： 全局唯一 趋势递增，这样对于 InnoDB 这样的 B\u002bTree 存储数据的可以保证写入的性能 单调递增，这样可以用作事务版本号、IM增量消息和排序等 不能连续，避免信息泄露，比如被爬虫顺序下载、用户ID和订单ID之类的被别
+
+
+      
+
+
+    ",
+        "inLanguage": "en-us",
+        "isFamilyFriendly": "true",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/xuliwei.xzy\/posts\/design-distribution-unique-id\/"
+        },
+        "author" : {
+            "@type": "Person",
+            "name": "Liwei Xu"
+        },
+        "creator" : {
+            "@type": "Person",
+            "name": "Liwei Xu"
+        },
+        "accountablePerson" : {
+            "@type": "Person",
+            "name": "Liwei Xu"
+        },
+        "copyrightHolder" : {
+            "@type": "Person",
+            "name": "Liwei Xu"
+        },
+        "copyrightYear" : "2021",
+        "dateCreated": "2021-12-03T18:36:21.00Z",
+        "datePublished": "2021-12-03T18:36:21.00Z",
+        "dateModified": "2021-12-03T18:36:21.00Z",
+        "publisher":{
+            "@type":"Organization",
+            "name": "Liwei Xu",
+            "url": "https://xuliwei.xzy",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https:\/\/xuliwei.xzyfavicon-32x32.png",
+                "width":"32",
+                "height":"32"
+            }
+        },
+        "image": 
+      [
+      ]
+
+    ,
+        "url" : "https:\/\/xuliwei.xzy\/posts\/design-distribution-unique-id\/",
+        "wordCount" : "2004",
+        "genre" : [ ],
+        "keywords" : [ ]
+    }
+  </script>
+
+
+
+</head>
+<body
+    
+      class="body theme--light"
+
+    
+  >
+    <div class="wrapper">
+      <aside
+        
+          class="wrapper__sidebar"
+
+        
+      ><div
+  class="sidebar
+    animated fadeInDown
+
+  "
+>
+  <div class="sidebar__content">
+    <div class="sidebar__introduction">
+      <img
+        class="sidebar__introduction-profileimage"
+        src="/images/profile.jpg"
+        alt="profile picture"
+      />
+      
+        <div class="sidebar__introduction-title">
+          <a href="/">只言片语</a>
+        </div>
+
+      
+      <div class="sidebar__introduction-description">
+        <p></p>
+      </div>
+    </div>
+    <ul class="sidebar__list">
+      
+    </ul>
+  </div><footer class="footer footer__sidebar">
+  <ul class="footer__list">
+    <li class="footer__item">
+      &copy;
+      
+        Liwei Xu
+        2022
+
+
+      
+    </li>
+    
+  </ul>
+</footer>
+  
+  <script
+    type="text/javascript"
+    src="/js/medium-zoom.min.1248fa75275e5ef0cbef27e8c1e27dc507c445ae3a2c7d2ed0be0809555dac64.js"
+    integrity="sha256-Ekj6dSdeXvDL7yfoweJ9xQfERa46LH0u0L4ICVVdrGQ="
+    crossorigin="anonymous"
+  ></script></div>
+</aside>
+      <main
+        
+          class="wrapper__main"
+
+        
+      >
+        <header class="header"><div
+  class="
+    animated fadeInDown
+
+  "
+>
+  <a role="button" class="navbar-burger" data-target="navMenu" aria-label="menu" aria-expanded="false">
+    <span aria-hidden="true" class="navbar-burger__line"></span>
+    <span aria-hidden="true" class="navbar-burger__line"></span>
+    <span aria-hidden="true" class="navbar-burger__line"></span>
+  </a>
+  <nav class="nav">
+    <ul class="nav__list" id="navMenu">
+      
+      
+        
+        
+          <li class="nav__list-item">
+            <a
+              
+              href="/"
+              
+              title=""
+              >Home</a
+            >
+          </li>
+
+        
+
+
+      
+    </ul>
+    <ul class="nav__list nav__list--end">
+      
+      
+        <li class="nav__list-item">
+          <div class="themeswitch">
+            <a title="Switch Theme">
+              <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a>
+          </div>
+        </li>
+
+      
+    </ul>
+  </nav>
+</div>
+</header>
+  <div
+    class="post 
+      animated fadeInDown
+
+    "
+  >
+    
+    <div class="post__content">
+      <h1>设计分布式唯一ID</h1>
+      <p>一般而言，设计分布式唯一ID的话，会有这几个要求：</p>
+<ol>
+<li>全局唯一</li>
+<li>趋势递增，这样对于 InnoDB 这样的 B+Tree 存储数据的可以保证写入的性能</li>
+<li>单调递增，这样可以用作事务版本号、IM增量消息和排序等</li>
+<li>不能连续，避免信息泄露，比如被爬虫顺序下载、用户ID和订单ID之类的被别人知道用户数和订单量。</li>
+</ol>
+<p>一般来说有以下方案。这些方案均来自网络，我选取了在工程上有可行性的一些，至于其他一些天马行空纯粹为了Geek的就没参考。</p>
+<h2 id="1-uuid">1. UUID</h2>
+<p>优点：性能高、没有网络消耗</p>
+<p>缺点：</p>
+<ul>
+<li>太长，16字节128位，通常以36长度的字符串表示，很多场景不适用。</li>
+<li>无序</li>
+<li>基于MAC地址生成UUID的算法可能会造成MAC地址泄露</li>
+<li>不适合做数据库主键：</li>
+<li>MySQL官方有明确的建议主键要尽量越短越好</li>
+<li>对MySQL索引不利：如果作为数据库主键，在InnoDB引擎下，UUID的无序性可能会引起数据位置频繁变动，严重影响性能。</li>
+</ul>
+<h2 id="2-数据库生成">2. 数据库生成</h2>
+<p>利用数据库的自增，专门用一张表来生成ID。以MySQL举例，利用给字段设置 auto_increment_increment 和 auto_increment_offset 来保证ID自增，每次业务使用下列 SQL 读写 MySQL 得到 ID 号：</p>
+<pre tabindex="0"><code>begin;
+REPLACE INTO Tickets64 (stub) VALUES (&#39;a&#39;);
+SELECT LAST_INSERT_ID();
+commit;
+</code></pre><p>优点：</p>
+<ul>
+<li>简单</li>
+<li>具备单调递增和趋势递增</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>强依赖DB：</li>
+<li>当DB异常时整个系统不可用</li>
+<li>ID发号性能瓶颈限制在单台MySQL的读写性能</li>
+</ul>
+<p>改进：多部署几台机器，设置不同的初始值，且步长和机器数相等。假设要部署N台机器，步长需设置为N，每台的初始值依次为0,1,2…N-1。Flickr 用过类似方案：http://code.flickr.net/2010/02/08/ticket-servers-distributed-unique-primary-keys-on-the-cheap/</p>
+<p>改进方案的缺点：</p>
+<ul>
+<li>系统水平扩展比较困难，比如定义好了步长和机器台数之后加机器非常麻烦</li>
+<li>不具备单调递增</li>
+<li>数据库压力还是很大，每次获取ID都得读写一次数据库</li>
+</ul>
+<p>改进方案二：DB 只保存最大的 id，让多个服务每次都取批量ID，然后新的ID在服务内部通过类似 AtomicLong 来进行分配。为了保证不同服务的 ID 不重复，可以这么来：</p>
+<ol>
+<li>服务从 DB 获取 maxid，假设100</li>
+<li>服务记录下自己可以分发的ID，100到200</li>
+<li>通过 CAS 回写 DB，将 maxid 改为 200，如果失败从1重新开始。</li>
+</ol>
+<h2 id="3采用一个集中式id生成器">3. 采用一个集中式ID生成器</h2>
+<p>比如 Redis 和 zookeeper。</p>
+<p>Redis 的话可以用 INCR，zookeeper主要通过其znode数据版本来生成序列号，可以生成32位和64位的数据版本号。</p>
+<p>Redis 也可以采用上面数据的集群方式，来通过不同机器不同起始值和相应的步长来实现分布式。</p>
+<p>优点：</p>
+<ul>
+<li>性能一般好于数据库</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>引入了依赖</li>
+</ul>
+<h2 id="4-空间划分">4. 空间划分</h2>
+<h3 id="41-snowflake-方案">4.1 snowflake 方案</h3>
+<p>snowflake中的64-bit分别表示如下图：
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAtsAAAC1CAIAAAABc6T8AABEkUlEQVR4AezWNwHDAAADMPOn2v11OxByZUsolMLSACAFADASAIAUAMBIAABSAAAjAQBIAQCMBAAgBQAwEgCAFADASAAAUgAAIwEASIFVer16v3dmwOPR87mj/v+yt5EA3+/A3lnAuJGkUThiHPHxCY6Zb5l5fcvMzMzMzMzM7GEGz1KYGRxOHBomJ21npv77n36p1OqZkO3TwL1vS1a7XK727uZ/evWq7EQuwMcfyx//KFu3itHSIr/8pSxYIEEg33wjkyfLzJl4HD8eAqosXCjffYenc+fKRx/J559DVR9/HJ2jEEKcDBMvvIDSGxiQMGvWuFQKNdXeLhs3upUrZfNmLVh9RGGuXm0f2PX0uC+/dMXFrrISraJCiotFe/RdhI6EkMKwdKmceaY8+KDXKfDww3LbbeiJUFoq48bJnDkSZssWyNwxx0DFVM6am6WjQ5RkEoOtvfWWeOJxeeklCXP77fLXv8J56Mh//tMaridNEhEYlOuvx4Avv5R778XF1Kly6aWYJxZTPZU8GP6lISE1NbLnntLZKYaWzzXXoASOOgrlmXsNAi0Zq0EtHLvwTcejxi+6KNofj7u6OtfW5n77W7Upzli40OlL990nd9yhzenjJZegZ9MmFk4BHAkhBHp08MGmTdAyZf58eecd3yMRvvoKL82eLWGCAPblyScxWzyOAbNmmSPBGkt19tVX5aabpKFBEglEHWefLaecIpWVkk5LaysUc8kSyGiE00+H81DWroX/+OwzaWqCej7/vEybhp6ZM2Fl4vHRunglZMUKqaqSH/5Qm3kIFNGBB6KIzjsPjz//OfpzrEGAkrn7bjgbrZd582TRIm2IGydMwKPll87JEUcgoTTU7qi/6esTdST+7skkPE1YE2xAV1e+joSOhBDi11top54KLevrgzKGeoZ2JFdeKSedJLvtBjE1NXzgAXnxRZk+XfbZRwdA3ZYtU+GDtioa8FrnJZdg2j33VGnDY0+PjsEd02ls5cRiaDrg/vvFOe9IoI/HHWdBC25qanvttfL66/g8d96JDaARFZIQ4nbO3R51lJWbdyRqzfUp7IXyySe4rq3NvQbNkbz/vtTX+wDSahyP3d3eW8CCFBWhQp94wioXuUvIkdgHizS8Zf16yRM6EkKIao2qEgTunnssvzVp05wW8rRtR4J22GH6aBsrJmeYIZHw8opzIckkLp58UgfDTAQBlE4EaYfftcEYKCOCk/Jy3DqRUL+CW5sjsZvGYnh6yinYTqqr85Kq3gWnSbLZURmREDqSTAZ/es8/3zsSrRH82X75ZdtRtevca9Acic3Q2yuXX671oo/6KoLG8JxHHYXxN94ot9wCKxNyJHD8EyciYmlu1gNeviFlaWzExZQpKNicoSMhhGAdtt9+kJJrr0UI4Zzfk1ZPYI4EYlRbCxNQWQn3YGr40UeilJXZYi48Hq7CR8p2jqS0FJr41luIOn75S+jvp5/K009HHcmll6rbwF2efRbCGnYkzkGyTWRPOEF3siGCV16JzPmBBxDAFAo3DBkJITg14h1JdTX+qCcSvoKQfORag+ZItNzg9dva5KmnLP6UTZtwu1TKjpbj7o89hve+8QYClTVrwo7EJscbt9XswxM6EkJyAxmsZb/ff4/F1m67YfE02JH09XndgWMwNVywwM+g7gFj/HgbYMsvv2tTXCzPPKOvYtg330BGBzkSiPLddyM+eeSRqCP58EOTYGjrLbdAOnW75/PPIZ1//KNJ4djISAgdCaIIfxJ82TK9hkfPtQbNkcCI/PGPfhJvL1BNzmH355xzIAIWPS5ejGnDjsQzdar2YJXS349Hbek0rvOBjoQQYuFwuEGzIC7RjASZsH0Xd80aEzv02AwmauHx/tidP9m6bBlMhqqqsnAhbhHJSPyuTSKB26mShnZt0BOLYc7HHjPdREyyfLm+pJ1wMAXBOSDahhVCR2K5iNVLYyOuP/441xoE6Jw6NXxgHCXW3693tNOvZi/wxt12g+HIZnW3CLMNdiTvvRcVDfsk+UBHQgiBDHV1ofX2Yk/kqKNw7TOSbZ8jsZAWKnnggXbsLjzezuLpxgpSYmgrTthF98Lj8YgjQebx2GNe47Cq8ydbvWRfcQXuePDBWBE2NyNQKSqy8LkwjmS4EhJCrrzSOxI7EYKnpaUWZuAXQXKtQcyp10uWiMeXVWurd+B+t8h/qRgeJZuNOpJ0GnIRBNp0AF6yXxIidCSEFHCJ5v1HKCPZtiPx7d57MSY8fsYMv3JCIvLHP9p3bTDSZG7CBPy4iC0BvSMZ7CpSKazY/DmSc87Bvk8shq9EXnutzg9HcvvtMCgWsQw3hOT+va1bbglXAeIQX2Kff55PDaLQbJ9FBL5/1So1MegPs3691RSMvkdjko8+Gro2zc2kUkgobTkxjNCREEIgQ11d20xfgsB+shqpchjn4CHsuKuhAwZbimwWVsZvltt3kktK1M0guK6qgoYqQYBox343ZQxB+MOsSCM2bkSJ5VODzukZLBSOdx7mVJLJyG+2qpvBOXGPP85yzTVwM5ESzmTcBx84m0rnH63QkRBCMhmvcSadyIEH09KCZZ8HFmcbYLYRBiEOzckIw8pqx2y76JyTbNZ1dblUavhKj46EEEIIITwCTkdCCCGEf52en9f55rudODQnwwuhIyGEEELoR+hICKEO+hbqYVBMiE8vJE8IHQkhxEVXX04Ju5BtUbi/o9hpG53rP0K4lTKqoCMhhAw2Mf6ZU4SOhBBCR0II+R8TBEFra2tvb+/AwMCQobdYKzzOGn+2VQghdCSEMB1JJpOffPLJ1KlT0+n0tkah5es76EgIIXQku0ImyAgh/0+OpLS09KSTTnrttddaWlqGGiDW8A8wD2FPo1YCL1g/EMPebZPseMuIEELoSBbPnHfYD/+qbdPa9Rfuc9ztp142ZIid2RKcs9t/HrzoJnt156n/rOz8PY/W99Z+UhJ+7/jqhN6ruaQmMv7r0tp/jftpcs7CyN1P+eN/2TsL2DiSNAqL+cSsExwKl5kDG2ZmZmZmZo7ZDjOjmZkpjGZmxoNv80utUSc75x1bmvP4fwspV1dVd8fdVa/e/6q627JBU/7V2pqXkZ0QHFVVXmnzLSsUPIoIJL179z506FBBQYGVFTfCKEyLeqz7cdvCSMzlFQqFQhnJmb0nYQCXjnowxo/9uKcVRmJwgrY3/vD8DRqf32ssXIdE0I0Hkl9RUgYHIufqydOmKoHXH5D/IvWJScI5vmbX2f3OXBuN/FYg5XF77lqhjOTSpUswkl27duXk5NggVigUKjTyHoGu9fooIykvLt2/aCPDMIzhhsu55qZmRugTa3e7bT104ZDbhM/7rBs7D+VAHpFb7hdksN85a1VZYTFj/9apS8/uc+JoXEA4JRFFKOax/cihpVvigyIp+dOf/nly3Z6MZ69QMoSRwE5gAOQv7DNezggj4ewwEupGeQdR99wBF9IigXCIU5hCPy3NLTTI0daWluqKKu8LN9NjkuTQsVU7OK8VRrJ3/rpVI2ZRPeJBoDAS922Hrxz3epqYJuSGC8t5namPncJmRnLhwoVevXpt27YtMzNTu9Q/CoWuUKuurn7z5s3r168rKytlHqtwfEbC755YCeTg4mH3NaNmMxhDAupr61AsSEM+ZISGK/BMUEYyYR4kBv/1O7gF4zoJWMWBxZuEBFBdykT7hQozWNRv4rOkdGEkra2tjPdkbpu+fPmQaSRue1wURkJOamS8nKK0oEgkECiRFNu3cINlzy4XScnDy7cuGTAJqmHEiSj8KDaZ0/0eIxFlRRLwGGmKe4wPipBMmn3z5IU+drZB0dzc7Onp2bNnzy1btmRkZGh/qlC0nc2LOuLt7d2/f//u3btfv369qqpKaX2XYCQIDHAOBmDUgifxKQ/OXmckFn4Az2isbzBG64Z3CTSJuppaKl5zOsPInRQWc3rPCQjNm8fPZ3cbQQ785lX6MyOGgvpC4w119UgaVIeRNDc1oWegvlSVVeDzEBIjZzTYQN7bLMkhnfXyLSWhF6Rz32aH3w+I8Qv97WoTUqX83B6jOCTMBrWDkjAnHmiqk8MNRvkER/uGUJGmhJHAdbi20Du+pFFr5Fyi34Td9TPCOrZBoWB9zYkTJ7p167Zq1apnz57BwtteV6FQRsIb5OHhwRv0zTffHD9+HDOWMpIuwUgMbiH/MpzDJyxHaCNdWVoOR0H5INMQGxj706ISJDHsnz+6bTlImfMHXcmBVVCM+Ah0ASnFsk3spWTKGT/ISAgkCROSHCM/LTrR+BGSwbloEOsJggpHoU20LNQEZys5iC44QowqXjuPyWWL/kEoirSQLePapAB0R585m6GoqKjYs2fPzz//vGTJkvT0dCSTttdVKDRkU1RUtHHjxm+//fazzz5buXIltL6rCI2qkSBvMH6zwOTIim0yQiNpvM9IaqtrLM2nrG2hcNg9f9gGzIA0jISmhGqgu9CyaCQmRlKcV0gB4ixlRSWEciwZCQGaPfPWkkMtYST9/vxFUW5BTWU1ogXUp6KknP8TkSG4U15UQgEkGcMYS+MS6LH8F0cLcRmpUpidJ4RDHCdYW0hjOqG6iZG0RyNRKJjSbdiw4bvvvps6dWpMTAy7pbW9rkKhMklSUtLEiRP79u3bo0ePcePG+fv7y74+CgdnJOL54N+UiDiiG2LXIFgjPlOeDGEG4v/AxCpD+MNz18WyijgBpd00abF4XSErqCykCcrQuEkjkXagBRTAs8Koj+Ji6SPZMH4BfhQRSyArxFOkKf+r90jATrgwSzYt13PX6zLajDAbqkNf+Bfew+lQa4QYmXwkXBKRIwkzcdfGtXG/wrRokFCRPna2QYEjb+7cuV988cWwYcMCAwPr6+vbWFGhUGBlPXr0KHRk7969eMOHDBlC4u3bt11CJtGoDWYOy8iIEbWRAA1pyzUy4n4VOoLqQHVDL4FYiChiGfWAvpg0EpgNXlRpRPgKOgeqjJwRnsGaHZFqaioqOWRc2NunL01XzhIbIUBCcSAixiE5nVzS+4zE+Nd18wFLHYi0yDaGjqJQ2KA5p6SkjB8//tNPP2UB8I0bN+hh21JdodDlvnx4gd0FofLTpk2LioqKjY2dP3/+6NGjz549m5+fz/ChhhIHZyQAaYGlvDhF2lKYaAuFRXuwGXAUccj+T9RWVXNGK08hF0OBP+w9rK4xGIwJKD02bDKr0P5U/t/S0nLv3r3Bgwd///33v/zyy8mTJ/Py8rQbVTgM5CFH+YM9VHcEWEqD9aqwsDA1NdXNzW3UqFHoIuzoU1payqGbN28SwRk7duyxY8cgKLm5uRQmv7qDwI3g9NI31KF2SFModHonnVptbS1dZ79+/WbPno3yjKFEl9s4DPQ5h4WwR0hISAi7EsO2D73DwXZAWti3b9+mTZtmzZo1cODACRMmnDlzBuYB7+G1gqlcuXJlzpw5IpysX7+eII5UbOdJAQt5zp07h0/lxYsX3Bo3qJ9gUEaiUDhOyCYrK2vx4sXozGxJQg87ffp0uu+GhgaTmqJQdLpddjBzXLt2bc2aNZMmTRo5cuTQoUMHdwRQRPgIFG0SoIGaBAQE4A2HjsjLAptn6U1oaChEn8VrkydPFhGlo07NjaDBLF++HGoC2ZLzKjo9I1EoFHRnQUFB9NSrV6/mw7+HDx+mq3V3d2ee16mJiEIfbKQ+DKcM3ix+4fEWdeFKB+HWrVu+vr4EZSD0qIwmEys/staGDzIkJiaiZ2A0uXr1aoec9/z5805OTugu3BevKkZaVTSVkTgIFKqRMJnjWzbsNYkRDxZC78mUDslE1wArOvWzjRfK1dUVLrJgwQIcHhg+yMHPgQ+j/W4SWoCF4OdoamqS6OcHwSF0GopRmCrtPK9Ux3WOHvP48eM7d+4sW7aMYCsxHXJ0XY8yEoWic/fadHD0a8OHD6fXZrkNFCQ7O5ut0hCZjxw5ooLw/y2PBFbKKHiSWcQ+6x1wbZeUlPAkG39pJGyGtGBD4Xae2vQMIIpATSIiImbOnInAyUTCCLOaoVBGojC9S5aTBtCqsCvonemyUUR8fHxmzJhBWJovcTB95FdDPvFvouNowsRucM8hPlO+VWFXyItjZZRSWHY+xcXFxGhY0E6AA2nEIb/Hy00xo0D+4QOZzCJ4nVUmUUai+ABMFATyXl5eTr+Ay+z58+dsUh6vsB/i4uKIyMBF6KwxsWKUI0HAWyaRgBWMmAGZXEJKdu/eTQicqRi14hX2AwoWdgE2smNBB78gaKJaB6wM1fQzGD95hvFIOWrwUZQS7pRlxmy1TBxHFU1lJNagjIQgK0QkPDwcNxbr1rZv387KUixm+M8XK+yHhQsXTpkyBWmEpYnOzs4wRYOOSIfOfAvjHn06YXgWFLCd62KFnbDkHVasWIGZERvjgQMHvLy88FS+evXKcqxVGCoI43R0dDTiH9+XYf7Djw68gB96yuMxaNAgpg36PCgjsQZlJPitcJgvWrQIFo81YcyYMbgmCXwSFFigsBOgI4xz69atYxkCsXb0bfo1U59ODkEcpuYMflu3bsVAR60FCjv9vgCbWzAPZt8L3iPeJsQtfn0ZGRnvByOUkUCv8VXwV7Rz5068UA4Z5DIUaDZew5kOI/H29v7dL+kolJEomJowjcPuzmYACCRQE94ZNrpg+sJXqVIU9gMTR/R/7H6mb/yaOm56dtxzLG588uRJisKugB2GhYUx0LIfKLLW2rVrURzJ/+Am5bo9K50MK1D4HgJLyRyVkYg5hpg45nT2avsve3dhwyAUAFBw/73Yg2BRHCJ1d43Ue7cC9oAvQRDYjkqR3OLW0Pd9mqZRFOV5vrhyhsPheozk+lp6L268ZZ6YvhWTld2Q5LqukyQJw7Cuazly8XRtmibLsjzPT5r7Jz+TlGUZRVFd14YWKRLuMCkAzAF253EyKBIAQJEAACgSAABFAgAoEgAARQIAKBIAAEUCACgSAABFAgAoEgAARQIAKBKebs7YVRAAEIPA/lmn6LsgBeZwVoH7vhGx1ioiz/Osu5i5tUZE6bJXVS0HAK7rMiRBk/XeTWZgDrfcts2QOX/2zgPFYhgGove/6nZ6Qt0HDx5GNtkD7BfNUWakiUcp1Pz4J88jF+R1XcC+v79ZcEhSLhm5JAkWHKIkmHSiytShchSQFCHu+xZmEgGUUifBWTBwaeo1xk0VAZ7icGlUNXqtXGHsMxn3OYWG7bgKAKqyCJXJUBlKMERa2Qq7g7YDFpcMMFzIC/uqKm6WkVlhSV1VRbGyFNbCVMUVAWOt9awhkrey3NolHhhEYFoWLG6D5IQEkz4EQGS9D0MCaIcAwImnMsTG7HmQSI5BWrlHy9JZZSluVGeLPaMLsPapI2mjpi4XhI25ysH39/fhoC1ycLgALG4OptbwbC40nCWjPAesnhvtdls3bltgmXLink3pHiT+vAdNDkON7n0m4eG5MRxsZ8DsT7PXe+pffJG8/jX6y9c96Mi2BlEAfvexmbEztm3bRo/9FPdLKtn3eB9O9b9Ka1X9O2wTdXJyUlVVlZGR0dbW9vz8HKvn33DTcnl52dTUlJmZ6e+rqysj+vHx0d3dnZ6eXlZWtre3Z4uZrru7u/b29uzs7Lq6uuPjYwvIsbGxsby8vNLS0pWVldiA7+/vPT09sIywsfqnp6cLCgoKCwvn5ubsO94SrBCw5tmzurpaVFQkxMjICFQy23Fpqaivry83N1eNOzs7Nqm1yyG3npmZGRDH+B8dHdUExrW1NVk5ubS0VFxcLNz4+LjQEoCdnZ1NsLFSJSwf2N7e3s/Pz7jRl5eXEywjy9HRkSbIs7OzU1uSBRp5Wo48+zQnJ0d6tpIGbm9vV1RUsAwMDCgkNp16heNZvTxj8PT0VHVpaWktLS2+x1w/GWHLy8s5hPVl97ydn587wNLc3Oz/SNRn2JqaGsm3trY+Pj7KhAf/Z6murkaZMz++POmMNlZWVspKvTyLdXNz09jYiL76+vrr62t50oN6ec7Kyuro6EilUvyouqurC7C2tvbg4ADQMedJSLiGhobb29sQAyGRltp3d3dF5NBH/MDqIc/6qXa9ZdFnYmD5cX1r78XFBZ8SUDWJSkAP+/v7iUH++gPC8/39PYlKgFE3WIhheHhYo0pKStbX12lMVoEVLrDxGocpEvUQAwaFJie8CCqrwLITA2Hn5+eHkJJbKm4g37NPouoVTr3JjfXHgU1YcFImkoTlIS5+2hBFdGL+/v5WcsJCqE7Df2QQFoMiYlCvSEh7f2SQBgKbMOj/giYMwjqPfQ0M9uO1I7l0Y1GAYAEjzpMiXcUs6DzPAfnHo2PoNvuqi9mPV5DX11fyliEjUuSDF1yg2IAYKBPKOayGJNh4izXmSHESX19fX0IgC6Exg7B/nMH/2LOL5EiTGArA9/LKzMzMzMx4B5/AF7A3zbQaZtj7KvNFvIgc7r2hBvqvrJRSepKelH9n0CebGqSW8jIeZZh2BH6gh8E0M4AZFKKp8EYmP7yRCKI+joQ3RFA6lQgWMB//UPI8kTwPJSF6NDQ0NLSystLf348m1KHa+Dw73N/fK+aRkZHFxcWJiQmViVY0GxqWl5etHxwcYB+1qpinp6fn5+fHx8dVNRq9vb0lZXF2dnZzc/Prr79GEDrQ4OAgG8ju7+///vvvxpGlpaW5uTn619bWPnz4oLbv7u4sRnZnZ8fEQJwSyhcWFsi+evUKK5Uaxh14kJLouby8/PLLL2ne2NiYnJy0SBumsI0gcUqsM+OHH35ADevr6/ZMTU0xOORic2QZwCpSP/3008nJyejoKCkuAAEnYvzV1VV74jty4TiWocrizMwMokc3f50LsZhfHRfvnI6wDg8PPUeEZs1Mk4MtX+xkrY4CZ80sEezt7dV+uGPg2N3dJRj7UR47NTzKcwTWE0TRR4jDw8OiRgN+dIT/gyLu0GwPFi5tnp6LiwuA84tVhhtNSDLYzOWBgQHJIO7avG2Otm1sbEy304S0MSKssi7r9CrtELMn9Mwgq7mah+ApNMw4OzszJdgGsbgDfEgCR0Tii/8Tt/LXtwvGGq7ZDCXarq+v9Vczd8wmJWpWbGMb3x1nm+PAYhyBsKCzXJqJptAXWcafnp4KhJzkchLJ59OnTzrKy5cvSdEGoq2tLflpnZIIwlkOy5DYqZQkv8EupUREdhkO/vNWUNqSshWF8/NzB/GOWogpW0lLSbKIKsnpsnF1dRWIeGRigORfIwhSBeJEuSF2Urqvr08U+KuibSvFa+ZIBIkE9kRQky4RBCPMtdtiqmjSFgNYK0+olbGoIDXrJ/lmtvt8xwUs3ByR2O3t7SkQaSb/g79FaPNXXKywOblnFqQc54RM/KR8Pn78qNwUF0wCgmlD1ZClxxH5kAWpbWXFNCZhcEipQeJkzWoJUArEWSXPzaCZXEXWIgM8SBJJJTQwETKLosAAsiWCfrJNqjyPI09lInn+qHO01dHRoTaUn2rELOhJXX3+BYmStnl7e/v169eYvbOz0/VRLZlI8K9u19jYqFDdJNQtOnYLQaCeEd/R0ZEHtY3duru73ePNH3o/QkQTNtTV1d3c3NhmxbUYjVLreoEIUKTqtWhy8mvex7S2tvqqP3nAFIXd/N/NGDsgstxuFbk7isucBoBh3c+iBLFqRcS5o8VWV1djSduYhykcp1n6ygD0SgmTrFPCSP2svb2deTCBHpJ1j+QUba6GxgiLfHdjJqjBI0cjFMb5awdF4kCrra0FlOmhvr7eV651dXUZ6SAJbcwIT+9CnKu/2mYRbrCyzbCFT1Eej7ijRbW0tOjijkP9GJxH9h8fH2u3GqoQ4DvRhy3fNVfN0rMVPUmjlQ+2eYZJef3gEkkzA+BAT6ZD+FjhlPA5iOPY1hAGlrwiggmFjEHfDM6lVvfiglPAgqPJmkSbm5tZla7jXO2tp6dH12EeWYmkLWmEPIIwVGFLiVg0NTUBKsNoPjoWWCQMhfRrDwxwOjdNANIAUAJkYmCeX/UMVgkBxJKNMgrOqkOqwJaDkRUa+eBuLaPgA3/JzFkZ4iUTBKQNGB3X1tbGKsXFWdkOOtnLbONa+fsO85w64ohB2XEVFRX8VWKf+VsbrUvqEmEDnDObmkHZWVlZaXJiOXukhPEUCHkNIFgGDuWZgS/v2HgEbdpYqKN/9dVX/i+CBmi/UuK9giPoJ8sjD3AQBaEhAg2BSwRdD6RoQ0MD2XKz96uk4rJs4SachUMxSj+hYadF0TQaGs7+cwLLx3s7PENcsslk9qsOsVOAnilnG94AMsM8sBAO0skM5F1OJnvFCGH7RSpB9JUxDDC+qxpFWlNTY8WHI3BDR8hNEAVFTqIXeZUalIHcF1CyxpQYrFKQQ1VVFZBZJROkqzlD4UNJvvnVcSrrD/btBNWNGAjC8Jm87/b9b5UPfmiU9QDOGDCTeaNWq5eqksbhPweUkFKpAsGgDL7fb56LuSwIEQVZZLbPpki+/+MsEaFqYB1or6aZn88n8HVg+0dc6A7ZrrdhMWjQiigcDmoeKkTHsulYErLrWGCtn/WejZQ2g6EaDyKAIf2vt10DOFisdUE5qIWY+hnQoCISx6YHwNk0oCu46Y6xwBc3w4I296bwjCkYN8oed340gPAcG7TRB1KmA98eQ292P3AQFkBkbAQvXNga2ghaCPxl3PN0g+nM4o5Vmx2ym859F6bjGO53dkJVAD5jrcvDgBgx4xtjucp49Mk9aOivED8/fbtJNrHm8NYQ0Yhm3OEbAqMk3BFDuAzNRUkATYczOEDBQExoCENfr5d4YiN/wgcsewCA8hbLkm7AXdJdw1n4CPigPOeBLzRUA4/HA47LBaK1NDAqp6XeCYopRAaXYF/IDrgliyBACYYoBpxKc7DmJlC2S05/iINcIELLAeUcAMdyGm3TOia6XC4xChw30CwEgfrhp+ixaVJesSY44sAmAS2VLEuNGp5jPIsSFhFjhwXl2qkPy4ZAfKtQtFwVZB46spIRzhMQPFeWKkoq/ZVmVcmKwZ8UEq/EczbiStQHzbiDI+XORPKI3V2zY1KPMeWwB9+r4RGjGs1jQkFscUC+brebEDnS/0cDajpCQQnxRDatSAwRG2VpyYjN7G3HCUH57XWDNXJSkF3wXwQE07WKrYTIF28chJoPZJloY3QxMVYHCZd1CaPqNbAMclWcTSGDDmlIw/P5bGy/0fFdft3nJ/pnBJ2rLhnsHbFrwzmvC/64ZB/ZpCqsqNNT0kcvuNZNAit0/BFeC7FeaeKkO550QS5ofAvXLBpZ4xAWKkf9aHmmtBvkkSM7CkqUgHOK42NsZ5OSSBC7owf9k9RI0DNlw8MNizJXrtoOwUCewBarUyH6TqglXfQAgo8LQ9yXQX+STeEVBNqdZZKINUKEn1bnPKn94fd/NkWyvbVBwHBHD2gGdOJ6v9/bm9qizR4O0MB0H5wRasB9lEYHAC8WMAQdo8MxGYjvrTlFos3ADUqDQYaDD+COYDAlCHCQAIshha7D9HoYntI6ziEoEljAAnzRkCSC5sQ9EM3zxmIU0G+gUboaiHjGFFodmaHq3jL4ti6ACDcRs80ZIIAvsCatgyGYZQGdW47hAMVwPkNMXGs6+xvTgao22Z24gBsfF05T+Aa4cQnaxlgEARA3EMZhSvMaa1ILNy+wxhbCYjpgDbLzE7QZYlKUj7C5ZIhw+QBN8CSwAJTIY82TBBlqhF8cQDy+kZOjY9R7Op1kBBGaUTCNJWJc42yBQkgChV8Tao52Os3ivNWhE1rqcDggJ7lwXxCEHVlWD0CWJ23oLURgpV4ElBDLhnj7xgHXJBHLYu5oHYdZr+WDXTXGJUrFGmE3JjOFcsLB3FZ+HMCIdI+BdJ708ZMFDnvYpJLFVCEVDdwj+9gRWxgyv/pUdbzijxK1HHbM6BsHS4oi71yHhOKVOIiARV2vVynmAKYRKL8hSHRyO+FiOoJbIWVQVcidKo26MKu6pY3QjOwbIlnIXohUrCcRpHyhz97LSBm24wC244DpxNO1FhvJoiatWmHMj0D5oNIEhCf+RNiZVDkJnZijWHFQ2NItLIoz2hND/7RS3KzSLFYiKBsVi19tKugG/rBTBk1hrEAlgGSwAAqFSdG8f3JVnC1QBsu+DLITgDiy8ldGqBbBpIYlTmYpPJ7QNG56QM8aGO8WEzPyjUquQcRKwfOZ9hVDWyaKxAKllR3L4Y/wmohLvokSd7StITSBgwex0iwiw45cgCCeeEyDAKIaRLWDFBaIJ3UeVrjvG6BV+W5qXgdC9aCxIiDOdEbKSZrMCEConxBJbGkvzSs7wMTHhQc4wCtZUJ9So1ZpHX8STH6yk2QhxQrC9xPSpkg2RQK5HFTiM8xNcKyKpB5wE9UBYh/Q6Z/ug05aRK+OIqFF9CEc17QUDHoGkTbQDP6iSGAB/B1FolEBdNtZkJEiAY5Qg1e/KBJ06/lVkRilsSECeVH/m9eQUSScN12KBFtAKMDKjVEkhrDAN8tJkRjOZ0gHKFdFgnIwIuHlMS6lSIgn/ttSjyLBKOiWn6siMamFAyCKBNQCNdOBfnwziqQh/QIjmQUKV0XSSbWYrIqEAwb6TpGwfDwexdOkqyIxO2vcSJHgjBSJlxcEwSgSVGRRamBVJGTQKBJg7QRecOIzgZX6JNEvioTDqyLhjLUIrHpbFQnjkpgi4fZut+MAWTCKRPoUEkY0XPyNxWRSVkgtU4TlgjVFMopEYB3gQXmZTZGwY8m+V0WCWrjKK3EQATdNLcWOakaRdHrHbRciliJRSJHKqkikzHpNOorEEFlTSCkSTEORoCjVMorEGRhTuHYUCYp1Pb+GwWfqipJwMofjUyTCuyoSk3pMbayKJBmqOEeRiJKVCrtKG0ViRiX0+XxGkSghLG6KUSQSzVqachSJf3JbUixwVSRE3igSWeCAzDLilQp/nIE51OGJ1IiwB1ZF4tsJAa/UNjtGoXmxouH4vCoShK1i2RlFYqLWK+aWliLxJN8Uz6pI6CpProrEnX6SwiDxkSJRY+6PIlH5blq+qlsVicckbhSJGVdF4skO2FIkatWFwHJgVSQ6SPw9vyoSEVZFmyL5LxTJ9umMUVf37ty2DBA4tQaXMWWSBR+4iXjQoT7p56LgT5Mb6w5pT0PABbDYVo92gTJAvN9Y2GTrZ6iEycAxZHHQGrKAQjDa4TwLFI/Z8SvgNlBP0g16EtwbAqF0e298QQlFoqVjAjsJGIRL2HG+Ov/Z1UksQAGCsMPRBVzggI8nDSEseqWSWGEcOpApAMUDFsg9s5sOiAALyAKMDHHqbrg7nMRqnrdkWzqoB1BMarjFohC6oZNkptoXohPs0nkJD/OTzySdm1DMEBe88rFAljEoy8gPfWJK/oNIXom2qTkgg9SDPTRokyn6EnYLBRw3XXtigWKWiJQLdjgjoTIIHPEB54kD22U8RFlKmSy7z74h89aGe/2K1hSd+Us0AiZc8E2FYbhlqqXhQpRpOv7LFA8N9JZQGSgtOeUAzSr1wuuQBu4rALMYiOBFWCHxM4eN7ac5st/Pb4VLLhCJ1IyfQsoy3+JCrCmb8iueNuiKgf+SgorwIkbhIdWlDpW6m51zCJQyM1BM+vVrY3llauTEB/SmYJCoaykWcBymWnDkD3buBEWWEAbj+IX6/ud7P/jDhzhLs729Chh6LBOzJ1pq6yushQXqxtp1g5aivcpEZW6JDVXUigB91Ad4r/T3qHVgsGql1CBV7biDnEljGSVqRP2pSZGn1KAIINRkFESSuVfVwYo8FFKT5SvEgyVMjLPYTIiifbUhN2VZGgRLJmANR+Zw4khNMw0yAFqjaBo0FaF9GgQrgLRSBRskQgRh6kOGzIwNgKUamFlaozSLAKjMEklerxfim12QlUUIZo9BmV6IaFOR4qlFU0IgRmRoJxbIUchB/LAMRsVt+QLLcTgC9tMXVAoXDtJ+qb7DmhIABws5QC0+0Gjkg/TIEpCRDyodwOopkqQvSjQikxa4cGfmIxTwTbyIA+KGh3lUQKfBHAQINcHMaNFJxW1PZl3PV5unIvlfKpLmwSKCuXXhUs7gD0UHj5krV1e8ewQF/zaxk8L5s9DGwcQXMyehRws344oSngAqc5gBiEECuuUQaZiDiZ4+pQsc4o5JCWc2/ZL1eSxYAUhQ45MmtSVyYaIlB/FUbuaxPNzUGdka/QuhHMCZTZJ4OChBoXDvaX1FuLfSAKc4YropkfuhQIHcD/+auOBdYsCOXCWsC8eg+lSPVEhkSqUGcIWC4bRrlAWJLvaNJYhASICoUhCgHIj+UJkXthtO0iq0yXYo3NSKMIVUXACB0EBtrRV2xU1RTCnWoWViEc1JA7NGlG5bSxdb0yB2TD2pVSw2nLAoShIg+UstxsWd32SIEUPAifh2KAMB6DddUBmZEFR674OdlCagW4GHB0mI0SJqkw8Q+EmPzdA+LrxiNrqhgaKlAdJGEvIgYVQsRKnhg538IS5TPUAtBEsXRoEZsyobsAxJzlaXxIhU5AdxVdGyQ5Y524a5zzEIQBtwXDMemUyCkVeoAxnyCpWRWyddFUMssE0YjBYx5KOdyWFhsLiGE9kMmMF4i2asUYGshjU1h5xdBQZKf9beHkY5TCZL9S0JAGEPvKAPoAiwurAMB8qIXhFvaw8tUhqafBCJeNwBJxn0Y9zo6DEQlklGKUBZjFBxAxtHwDtYwiRDtGEQqcSrvGtvkFdGJMCGoEGwsBmIbdAv0UGi1OAdbY5m9lSsmAC7jVxcjAAJAQFMGpusDoMGpRrWrpG41O46rzpn84gkWIVy7QjDpgIUd5SCDGPRBcMWOozIbsUcOHHNj1CoJ3vWzVslF1ikYgqs6qSyjGmJDOTfwqeKE+9MgokqhQkEeeivG3ejSkjyQUQioB1m6q30pWREAyGQM5YNwdkJkG3gXUDw8Fm8kHP7nfHeyhmDp0GzO0IrmolvHcj/x9dInorkeUqEZiQKCB5V3cAJTXp2VmUnhMVHobAypQmo4NjqfdldsBOPTHfEAu3yhJguRJq78Pw+tWgULPhwtYuU08lJWdbKhLQq/IHVwnV5aRsY2wloCKvE3D5YBIMViSRLyUB0EOhFGakUVPdn9MVdRBM+OsMJbbtoBa/OYUIOVubQDWCL5+1/VAS0piKWGa4iAAHmf2CFMO2dGBL7jN4ZCpWBSG2yiCpI8KgbLgQviVPcAdvhAgnVRHYHKMxNDQecoBApCJo8kVXfy4GI/mK08CTSqee04whfEoZAhhHDETUZpkERrWPMunklgQmy0obGyKjmoH0dUOiV4kPZ1B4FU8ZOsujcFR3b1lB5BANSyyvWooErHdrcoN3skD10jqPCrlteOu6EHe1otrZhyYHhgW17ClgJCU4tKGwJTX4tUxI4elZidt6EuBIycUVkfzFiCPy2RAScBJSPhA+EDJGHJOtPkpZ8jIUWz9RGvlloAVihDDNLHmwHvxmS5EovCZnEJJvOIvEjftG+V4VjR6UwAsoQ6jAWMh/so5K6ge1RK1Klxp3+zUlzwDX6jRcIx51MxobJhOUYhXwqLuXCPCUtqwwIvGPt06AlKNUYaXcwpH0z5uj0zs7B6sbTdUuDhACb9jRINX1C8jeHNelfAKFN4O1Mb2sww2Cx/m1G4a86oCs9erCJwe6q2cUtbXzu6CyqqIkjUAr7NzSr6Lg1s1fHcGQtGKcUftQB7w5jA9RTMOkAEYG3rZXGeY3OfBB3ejIAfbgtToFo+dQHNULeYTTU5iBkSMLeEqkQYb7RqRyqySkEk84Da6R3ciNeBIA1bhpkRWCZCvb/l6LkqUieS9L4kkDDK4QGyczs7by56ytAGVTRIMqLNaKM4kMQEdz5VZ7P37rxU84T8TmhiN+dZrrx/ybu5uhcTjeLoiJ+xwhFAbBmh+ZSHNhjViSs6BasAAG23Q8emUD0EfRNOLrpKCJ3ulK8Fj6Ev+5DUwpAKJHAbIiuIYJf2q5SgbBLYBUrIovoIxoKfwjQTZgwHHAZUazRE7Oij+CCBd267gx5IkuwSpk+SEnzRGGuSSyl+R4gVUXdPuJHV4hKeyIm4hU65t/iHWrF02Irgrv6rElYxxrTILWaaXUlCVh5qHuxLN5okQPEbkFfoxlk53do36c0ovBX4tHCKryF6jQG+iJGwkQVwUpISkCZSTLrPg8FCjrZA35R1eKE9AaPv6oNEjCiNI9yNIBFT8dBJeO0bMmHPEmVbLtn0yt4EG8Is1jCIWqy7WAqQyLh07CJtysfEIBrJopZrKmby0PkAwk627jQRwH8aqFlqU432lcpsgRUEWywsgW9oKorARkMY2ZIVNZFXvSCzsHSLGNgsbqx3ma9J520A3PpVi1LJp8esamxv9OCgWihS8Y0diQby9IkLrqti7R5R1bXzaHonwaNngbJigbN6dOgxlODpESDMCguDaqbAkiLbmRLgxw/7aNk1MJDC94iwF+/9acImHXWyNLgJN7dMPbV9Cl1z/dJNdF14xGPwBR+cSff8zuPH11QBnZxg6lwIg/tdA5f3OiCMsoSGTpiA1affJDGdTNQd8cZmpzzQbC8+1Qo7rzt6pQ8FHes4owbQlDzljQobmAEnYwqDTIGFoiqKxr/+89TkTxPVwryK/5wXgL9FopT8Rmwfu84Pg/kyef18NDyQN00rqARzXnpttDmyWgAe+2619OPdTOEFoFG4F7Ugwol0I7s6+MUAsQRww0zkDBrWSMkGiHcZFQ3NAzzBVtjQQrjO7R5wu6IBL4IoWCUxC46gXjrwdowEwgk5w3r3mI/zHX7VIOGAwvbYFNZukjIowrxYGHblFTLul1S7QAIArq+aZgR0AW4w9w5EZi3jA8zArTPQgrEhjthYe60hbHObifsLCRD+vQqPzgR4O9yHsxASGaYa9TNcEYZZmOR80z0gt3VdiwhlW3cCzbNXiq76Mxx9ImAtz6YbSTeaaFG9Jy+AOGlhV+jwT2zuuYeo5N1wTxfeMvv5ftTisakPXryI9yt22LOYFNKDjKl1AjwUx8kq3Gn2xzzIvsHe+fALEuaRdFf1Hb3s23btm3btm3btm3bfq9mxc2JHKMvK6PWCpUuCvnVznPOt3f4LvBL/u26Ed74T+9g+JqH76BOJCoSERERUZGIiIiIqEjSGxEREVGRyJckggsmX4uIiIpEMoZwu93z58+DnQImX4uISHqjIpHQDGPnzp2rVq169+5dBpRJREREVCQqkjBvr0OHDg8fPkxvRSIiIqIikcCg6cSJEzVq1Ag81DNGi4iIiKhI9GxdvXp17ty5s2bNOm/evPfv30drlEREon60uuCIikQ58iVs2RC/Tog8wSg0bjQtjhDiIRwQ4adgbouoSCRo2RBXQTDHt0mQGmX4tUjkFIlPIfKIikRo2RB3SWDsN998gyIhCJsIqzB2QUTiliDRiVyVIIHFZxFhREUiVEpJiho5cuRvv/2GHIHvv/+e8FgSpEx4Eolz+AqnwLlo0SJinIN9+1GE/5xAZiKUSSAPhtgSEVGRCC0bejQEoCNEvkuCSknlypXPnj1r40YkziEwduXKleySI8ueBN1YNMGbcenSpeXLlyfrH40VE1GRJGzLZsOGDcWLF0eIIEqAMkn27Nnp47g0iMQ5dFfXrl1bpkwZnISYT49Fk8ePH0+ZMiVfvnxjx471REhUJInbhL579+64ceMyZcqEEAkVyQ8//DBgwAAc5e3pisR5v4NOR9WqVRs2bHjlypUoHrD8z7dv3x48eDCjbDRuXHMkQRWJcDpy+vTpVq1aBf0a5AhaJGjcVK9e/cyZM56vxDniIUzXtWXLlhUqVNi+fXsUD9jAnrF58+Z0bfbu3asikcRVJJZ8g5bN119/jRBBjgA1Eq7mypVrxYoVPCAWx4g4mU6BgfGLIkWKDB06lIF0vtGj9f9Ti124cGHp0qXbtm3Lc4mJJKYiEdYv2reID7zRfv31V+zRUCRcgMyZM48aNSqwSovFMSKeV+zYsaNmzZrUGJgPvXfv3ps3bz6mDJLA/8mvjMsQXuZeHpPCv8KkGkvQpk2bmjRpUrZs2WXLlgXbhUQSTpFIYNXKvsHOnTszFseigIt8lixZGjVq1KlTJ26ZO3duPO8BFpFAHHCczpw5s0SJEuXKleNEYtu2bbRyTiUXOrnsxb169eqTJ0/YixtIkxCaLM+ePbt58+b58+d5JCTvr9CpYQJm8uTJderUKVasGHMk2BB4/iMqkoTe+suOQXQJ8634GdStW5czFZYJFjhu5C4e4BohEueGp5Qr+DqfNm0a0yR58+blC77Mn4djP7xQpUqV1q1b8wuPHz+OcRmiJPhb1GMQIjRZunTpwpZjBBAPhjLJgn5x/vz5uYAcuXDhAs8iJqIiEdYCVoTGjRuzonH6ogoRiVY6HaIBV4/9+/ePGTOGWfVq1apVTKJSsmAdKFy4MC4A9erV27hxI0URfj/NoD179nTs2JFNMQUKFEBJBA9O3l9hf1CzZs2Yfdm8eTPnP2GTyMVHVCSJvqLR06VOywZCWtHUe02aEIli0l5QxuAL/vr161dTwKVLl3bu3Il3M0Nm1EJ2795NpYR6CYWTggULMoKKXxEmildTAP8hpVkc3jgdCmP2AmIiKhIVCWF7gSKJ4tIgoi5J3bopQ7JYwdIG6tGjx5EjR7hMP6h79+7MjjBfwp8z/ldUJJLK/NsaieVTEWdmMSVi1J1JkX79+jFcwhTqli1baN+4OIiKRNJckdA/VpGISHD40wNiOwxmJ1RK6OAMGTKEbov770RFIiqSdEJEwkVg69at1EhwKmKgdfHixczPxkRUJKIiSQdE5O9HOmjc1K9fH/tEdsdgDcAESUxERSJpPdmqIhGRUJGEzs74Jf7+++9NmzZlcWDi1ZVBVCSiIhGRdO3aBKMkffv2xZsEK2dci9J2O4yIikT+7V4bEdF7jayZESNGYInGdptr167pCyAqEknzOZLLly/jDE26DS7R+pGIhKhIxo4di4UrXu/E2aTZyiCiIpEvf+0Zk6pFQNe6desIBw/ucN0RUZEQbkVCeMmSJcnwIz1HRSIqEvkLO2cBHNeRvPEUY4orRSn4Mx5fmJljZovMzJLMzCCH41jymW05nJiZ2VJ8sgySWczSinf39dfXndl7Za2x7oJ2/2q8mjdvZt4WeX/1Te/e1iv+Dhwt7kQDRMa//+sme55XX19fW1sbDoe/Xx+Zg5tz7T5u/rW0eDTYMIxfI57n7d+/f86cOVu3bq2pqbnVVMMwIzGu0YNI4gE4obitkeBGE1r4xG2MxM3EDeYxt/CeXyOGYQCoqqo6d+5cSUlJOBy+1VTDMCMxIlJwo3wCt/GB6+4gegVu3q552A1mcovwhH+9GIZJied5t/2pVsMwIzGcjICJACJnJ+QhUMNVVRQMtjhhIUJ9PWpq0NwM4YbxiRsnYplWWko3axUV1NCAYJBqauTy+pmQVlHhHiSwYRiGYZiR3M14HurqUFLCly5xfj6CIWKodmzbzl9+hYIChMPws4zaWhw+jPXrcS6HZJyIw2HZgX2gELPusGsXLVtKS5ZoS02jRYu0paVFRj7/nLKzqSCfNm3C4lS4wU8+8efgk8VYswaXLiEUMiO5yzEMwzAjMR3h8nIcOICVK3nGdE5NQ0UlmFFehvHjuU9fZGT4cYg0Li5GWhrGjcf27eoc5eWck8OFhUzkCwmYINQEsG4dJk+SfTBuHHr3wSuvoE0bDB2qI9IWLsTBg8jMQHIyOnTS19Gj0bEjXn8dI0ZgwgSOjeFuXXnPHjQ23p3HNoZhGIYZiQGGvgRDyMlBaqpKw1tv8YiRVFSkN8pKkZTE8Ql07JicqmiI0tQEItTW0uFDtGE9nTtLpSXYsAFTpuKLLxAIwPPghMS9hj2urpbohYqLSXKOxYu5fQdMnIjjxyFaU1IsNqOrvstEchKSkunECcrMxNgx6B5Du/dQTg7eWYju3bBz511sJIZhGIYZiQFtHqGulq5cxs5dFBuHkYkqEMykRpKMuHjauoV27MCXX0qeQWVlFAhQRgbt3EGnT9PefRg2HC++hFGjNDKprPR/gwD6j90LkUe5uRg7jtu1x9JlVFiooQsRmCkcopPfYeRIJPQgubV8BXr2wtut8OGHSE/XbTt3FiMhMxLDMAzDjOTuNhL3h0JiBicpPoFHjKKia4ykQ0c5PZFxvPIq4uLw1Vd05gy9956evKxaiQ8/xsuv4g9/wLPP6oFLbi4TwQtrWEKkO0Oh6mpVjbda8YsvY+48rUE5chTlFfAoYiRDhvJrr3P/ATxwIF57HU89jZ49MWQI2rZFu3YcyUjYMAzDMO5eIzF8I8nMoPg41lObYjgjGT2GX3hR5IPmzachw/DSy0gegx07MXcu+vTRGpFNm9GvPz//PAYO0BCloICLi/nCBW2lpezqYSUO2bMHPXvzk8/wk08jPh4JCRgwgD//AqVlFGwWIyFRnzFjpcrVO3NG60tiYnHoEK5e1aQkJkbLYxsbrbLVMAzDMCO5R4wkkxLiWU5tpPLDN5J27eXUJhwIeMeOoW8/DBxIYh5zZqNfP9q0kfLysGgRd+kiVbEQaSgq4sWLMWAgBg6iFSv0G8LBIDIytEy1cxeVklatkZSEWbPQLYa7dmdZVZCvla2jkzFpMl2+4omFTJuGnj0pK4uqqrSENjYWu6yOxDAMw7gHjMQAQMGgntr06MlSYVpcQkReWZkaSacutGdvuK7OO3pEvywzeDB9841mJP36YeNG5OXxRx9xp05YvpyaGhGowf79lJ6O9HQ6ehR1taIjPHy4nLxATGX5Cq1KSVnoiW18/rkEISw1IqtXY/duyHnN262RmEiJSRBr0WBmmIYlXbuiQ4c7r2w1DAORdisuX+b//E/OymIHwO+/z3/8Iz/6KO/axVE0NfFvf8s9enDUz5tJ0PnAA1xVxYEA796tPx3wg6LPfegh7tlTn3vnuHfbsaOu+uwzvu8+v8n/N3zuHBuGGckvubLVQ3ExbdhAM2bgtde4XQc5K6F9+0jiiuRkfuY5yDnO++9j2DAtJZk6jfbvh57a9MbGDcjPx8eL+LXX0L8/ZIeKCniexC2QxCUcxtUr+v0d0Y6lS7QvRzzxCbQgxcvLo4pKbNiId96hbVu1bLZnL+7STbOTGTPRsZM+aMJEzJuHXr3QsaMYyR2e2hiGgVvaSFkZHzjAL72kn9DHj7MjJUUv27Thf/1X7Zw8Gf0Z/7//qx/naLlxair368d1deI3skqd5ofFPfett9jz/pFVvpE8/zz37s1PPKH9++/nvDw2DDOSX2IyIo1DQc7MxKDBePwJeuhhPPwonnkGUyYjNwdjx6Ftewkw0KoVvfACiXaIPeSeR8pCDBiAzZsgCrJpE7rHQEpJEpNYbjHrplC4shLfrse2bXoM1NSELVv1CzUpKV5+HnmeJijlZfrbrN9+K9kJxFSKi70rV0ikJ6GHl3WKKitpSRrFxempjRmJYfwQLF3qZwZqJH6oIOlIKMTZ2To+ceL1qYPGIVOmaI4yeDBXVrKwYoUEoKojcXGySids384+5eUcH89z5khXxlVoMjMZ4KlTedgwltCztpaTkyPvZPZsbm5m4cMPdc+lSzXCKS6W56pbALxpk66aN0/7a9fKu5VbuvmNVkVnJL5gpabq5QcfsGGYkfzSQAQvjKIi2rDRS1sSaUv/gt27qLKCdu8WpaDjx2n9eu+zzygjQ0tDAgE9kdm8GRcvUCio3wfes4fWrCGpeJXKj4joQDueh/oGkQkSwmFs3sIxsZJ8kGQkeh9MpPHMokV6OrM23WtuDpeX08yZKi5Hj0mhK6ZPR7du+IF+Ic0wDM/jcJiXLPGNhOvr/VDByUdULOEGXcCg2iEdN6FnT73MztblTizWrWMf8ZuHHtLQJRjkIUOcCsizZInaiQw++6wMSlrj0gvdDdCTIOk7v1G30NMiDXX8kZUrpa9i1KqVdgYNun5VlJH4UZDLcvTpcsswzEh+YSDyh0UXGhooEIi02lrNJDxPzkpkHMGg3q2v1w5AQlOTjodCEDxPLqmuTpcQgRnQF/3nGggMNZLtO7hff7z/vp71uPsAKiro669ozhycOEGe54mRzJ+vZ0Dpn/KYsXriM24szpzRZ4F0yT+NYRj+R7X/OT1rVosijJwcXr+et27VVlurg+IW1dWutkPV5OpVDUtcHYnbITVVXWfzZt6yRdfm5uqeMjM7W+XDOUdWlnY+/1zuaicpiQEmUr1wMiF7OrORB/km5FTj0iU/rdHllZX6TtwbiF51YyPRVb5OGYYZyb0IGNqIuKCA9x/Q/5/q631jQSiI0lJcvKjpC6Byk/VX/Un7nBzs2iVJDJ86hfo6pzVsGMYPbSSBgNqG+wj3MxIXorhWVKQpiMswBPfxf/iwbyT6Se9HIP6q6dP54EHtpKToYcqkSfqU+fN1RNzi1KmIxDhkc3/PBx9UBxKijKSszMU5euk330j8VbcwkrNn9dLdMgwzknsOKASGtlBIcxT3a61+gCJ4HsJhHdRrQnOTTgsGUV+vTTqCExvDMH5II4kuIC0sjIQZeXl6VnLkCB89yg0NLY5yBgzQ5OPChSgjcRmJWoWskrWyg9xypbJiJNnZ7sRHz2jCYZUDJyuCv+fFi/6evlvoAU3//jpZbjkjEfkoKOCaGi0QEekJBqNW3bCORB8aE6OXa9awYZiR3JOA4cMMN8B+V/AvFSBy3+/4SwQ2DOOHNhI/okhNdQUfWkbqiKojSUxUh3CGEQr53/71s4fo79YCEQno3Vtt5qGHtL9ggQtmXNqhRamzZmnnqadUGq53i65d1TncG8jI0GJYt8m6ddoRO2lsvLWR6GXPnloMK30xJI1SDMOM5J4Fjpae4ptJNPBb9KBhGD8IX32lH88nTvhfCfbPR7S2w/NubCT+QcmZMywkJqoQiAf4y+VQJorVq53r+Mc9vgbpJi5BkSaykp8fmeP29J/rvnW8fXukBKS6WvUi6p38rb270FUYBsAw+v5vCnFi+N+bSeW6+zk4bGuj+/C21pO/RzLdud0WUCQAXyGZvOE7OJvNtMN+cplpr38+lwcdDtMCbxv0tfPd7epaPxaKBIBaJIAiAfhBP9sKvL1IAFAkoEgAvGsDigQARZKsP3svsb6HIgFAVF0u0/FwWP6gonwBFAkAZDr2HLkej7leMyugSAD4PGnHzMfh/mvKtS9w27BwXQAUCQDPq9FRZVFzoj52f4n6yL2QSVvs/sKZ1AtQJADcL5JeCanHqtZH6mJ5wWYznA8b/5AgQZEAACgSAECRAAAoEgBAkQAAKBIAQJEAACgSAECRAAAoEgBAkQAAKBIAQJEAACgSAECRAAAoEgBAkQAAKBIAQJEAACgSAECRAAAoEgBAkQAAKBIAQJEAACgSAECRAAAoEgBAkQAAKBIAQJEAACgSAECRAAAoEgCAG6UArvnFAxnhAAAAAElFTkSuQmCC" alt="">
+具体而言：</p>
+<ul>
+<li>41-bit的时间可以表示（1L&laquo;41）/(1000L<em>3600</em>24*365)=69年的时间</li>
+<li>10-bit机器可以分别表示1024台机器。如果对IDC划分有需求，还可以将10-bit分5-bit给IDC，分5-bit给工作机器。这样就可以表示32个IDC，每个IDC下可以有32台机器，可以根据自身需求定义。</li>
+<li>12个自增序列号可以表示2^12个ID，理论上snowflake方案的QPS约为409.6w/s，这种分配方式可以保证在任何一个IDC的任何一台机器在任意毫秒内生成的ID都是不同的。</li>
+</ul>
+<p>优点：</p>
+<ul>
+<li>毫秒数在高位，自增序列在低位，整个ID都是趋势递增的。</li>
+<li>不依赖数据库等第三方系统，以服务的方式部署，稳定性更高，生成ID的性能也是非常高的。</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>强依赖机器时钟，如果机器上时钟回拨，会导致发号重复或者服务会处于不可用状态。</li>
+</ul>
+<p>算法大概是利用同步，然后生成一个毫秒时间戳：</p>
+<ol>
+<li>如果比保存的上一次时间戳小，说明时钟出问题了，抛出异常</li>
+<li>如果和保存的上一次时间戳相等，则接下来后面几位生成</li>
+<li>如果比保存的上一次时间戳大，则用该时间戳进行后面几位生成</li>
+</ol>
+<h3 id="42mongdb-objectid">4.2 Mongdb objectID</h3>
+<p>时间+机器码+pid+inc”共12个字节，通过4+3+2+3的方式最终标识成一个24长度的十六进制字符。</p>
+<h3 id="43-一个简单的类似于snowflake-的方案">4.3 一个简单的类似于 snowflake 的方案</h3>
+<p>该方案来自廖雪峰，缩小了ID的位数到53位，为了适配JS的需求。它并不强制依赖于时间戳：</p>
+<ul>
+<li>遇到时钟回拨时直接等于上一个时间戳</li>
+<li>该时间戳用完的情况直接将当前时间戳加1</li>
+</ul>
+<pre tabindex="0"><code>private static synchronized long nextId(long epochSecond) {
+    if (epochSecond &lt; lastEpoch) {
+        // warning: clock is turn back:
+        logger.warn(&#34;clock is back: &#34; + epochSecond + &#34; from previous:&#34; + lastEpoch);
+        epochSecond = lastEpoch;
+    }
+    if (lastEpoch != epochSecond) {
+        lastEpoch = epochSecond;
+        reset();
+    }
+
+    offset++;
+    long next = offset &amp; MAX_NEXT;
+    if (next == 0) {
+        logger.warn(&#34;maximum id reached in 1 second in epoch: &#34; + epochSecond);
+        return nextId(epochSecond + 1);
+    }
+
+    return generateId(epochSecond, next, SHARD_ID);
+
+}
+</code></pre><p>不过这一种方式做不到递增，如果某台机器产生的量大，它之后的ID会比其他机器都大。</p>
+<h2 id="5-美团-leaf">5. 美团 Leaf</h2>
+<p>Leaf 实际就是两种模式的结合，业务可以根据自己的实际情况进行选择：</p>
+<ul>
+<li>一种是 snowflake；</li>
+<li>一种是 DB 加批量分段，不过做了些优化，就是用一个异步线程去检测分段快用完时提前获取下一个分段，减少分段完成到下一个分段开始的耗时。</li>
+</ul>
+<p>参考</p>
+<ul>
+<li><a href="https://mp.weixin.qq.com/s/0H-GEXlFnM1z-THI8ZGV2Q">细聊分布式ID生成方法</a></li>
+<li><a href="https://mp.weixin.qq.com/s/QtjpUpl2FF0DKPPHh6HDGg">浅谈CAS在分布式ID生成方案上的应用</a></li>
+<li><a href="https://tech.meituan.com/2017/04/21/mt-leaf.html">Leaf——美团点评分布式ID生成系统</a></li>
+<li><a href="https://mp.weixin.qq.com/s/wi500aths0QmWgsgE7eemQ">【融云分析】如何实现分布式场景下唯一 ID 生成</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/65095562">分布式唯一ID生成器</a></li>
+</ul>
+</div>
+    <div class="post__footer">
+      
+
+      
+    </div>
+
+    
+  </div>
+
+
+      </main>
+    </div><footer class="footer footer__base">
+  <ul class="footer__list">
+    <li class="footer__item">
+      &copy;
+      
+        Liwei Xu
+        2022
+
+
+      
+    </li>
+    
+  </ul>
+</footer>
+  
+  <script
+    type="text/javascript"
+    src="/js/medium-zoom.min.1248fa75275e5ef0cbef27e8c1e27dc507c445ae3a2c7d2ed0be0809555dac64.js"
+    integrity="sha256-Ekj6dSdeXvDL7yfoweJ9xQfERa46LH0u0L4ICVVdrGQ="
+    crossorigin="anonymous"
+  ></script></body>
+</html>

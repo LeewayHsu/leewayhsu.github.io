@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html
+  dir="ltr"
+  lang="en"
+  data-theme=""
+  class="html"
+><head>
+  <title>
+    Liwei Xu
+        |
+        缓存与数据库的一致性
+
+
+      
+
+
+    
+
+  </title>
+
+  
+  <meta charset="utf-8" /><meta name="generator" content="Hugo 0.102.3" /><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="author" content="Liwei Xu" />
+  <meta
+    name="description"
+    content=""
+  />
+  
+  
+    
+    
+    <link
+      rel="stylesheet"
+      href="/scss/main.min.b2e0cb07595e3519ab1193bb421914e06c0e26b0cc561fef23b3c6131d4d2ffa.css"
+      integrity="sha256-suDLB1leNRmrEZO7QhkU4GwOJrDMVh/vI7PGEx1NL/o="
+      crossorigin="anonymous"
+      type="text/css"
+    />
+
+  
+
+  
+  <link
+    rel="stylesheet"
+    href="/css/markupHighlight.min.31b0a1f317f55c529a460897848c97436bb138b19c399b37de70d463a8bf6ed5.css"
+    integrity="sha256-MbCh8xf1XFKaRgiXhIyXQ2uxOLGcOZs33nDUY6i/btU="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  
+  <link
+    rel="stylesheet"
+    href="/fontawesome/css/fontawesome.min.7f3c2281c7f965ce3c64888aa452793252a0416909c181097f81d0a0f7d1624e.css"
+    integrity="sha256-fzwigcf5Zc48ZIiKpFJ5MlKgQWkJwYEJf4HQoPfRYk4="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  <link
+    rel="stylesheet"
+    href="/fontawesome/css/solid.min.35fc032da8ede6681675d20a2f862fb9e1045c1d512d495fcf862c054daffef2.css"
+    integrity="sha256-NfwDLajt5mgWddIKL4YvueEEXB1RLUlfz4YsBU2v/vI="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  <link
+    rel="stylesheet"
+    href="/fontawesome/css/regular.min.3b92357925ea7284f0c6b0378396f39f470f7842ed9702f337e667c4026bf837.css"
+    integrity="sha256-O5I1eSXqcoTwxrA3g5bzn0cPeELtlwLzN&#43;ZnxAJr&#43;Dc="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  <link
+    rel="stylesheet"
+    href="/fontawesome/css/brands.min.ebb1096e1976e8cc4e2532cfa050b8f30eb13b8eb06be5cee3e38eb426b838ea.css"
+    integrity="sha256-67EJbhl26MxOJTLPoFC48w6xO46wa&#43;XO4&#43;OOtCa4OOo="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+
+  <link rel="canonical" href="https://xuliwei.xzy/posts/consistency-between-cache-and-db/" />
+
+  
+  
+  
+  
+  <script
+    type="text/javascript"
+    src="/js/anatole-header.min.f9132794301a01ff16550ed66763482bd848f62243d278f5e550229a158bfd32.js"
+    integrity="sha256-&#43;RMnlDAaAf8WVQ7WZ2NIK9hI9iJD0nj15VAimhWL/TI="
+    crossorigin="anonymous"
+  ></script>
+
+  
+    
+    
+    <script
+      type="text/javascript"
+      src="/js/anatole-theme-switcher.min.738c0e3a493854876aeab9e2316fd43f1936aeeac4cc6b3e60bb26456dba72ad.js"
+      integrity="sha256-c4wOOkk4VIdq6rniMW/UPxk2rurEzGs&#43;YLsmRW26cq0="
+      crossorigin="anonymous"
+    ></script>
+
+  
+
+  
+
+
+  
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="缓存与数据库的一致性"/>
+<meta name="twitter:description" content="对于读多写少的场景，缓存是提升系统读性能的一个常见技术。而数据系统一旦引入了新的组件，必然会带来数据一致性的问题。这里不考虑强一致性，强一致性带来的性能问题在高并发的场景下是不可接受的，因此这里说的是最终一致性。 对于缓存和数据库一起使用的模"/>
+
+
+
+  
+  <meta property="og:title" content="缓存与数据库的一致性" />
+<meta property="og:description" content="对于读多写少的场景，缓存是提升系统读性能的一个常见技术。而数据系统一旦引入了新的组件，必然会带来数据一致性的问题。这里不考虑强一致性，强一致性带来的性能问题在高并发的场景下是不可接受的，因此这里说的是最终一致性。 对于缓存和数据库一起使用的模" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://xuliwei.xzy/posts/consistency-between-cache-and-db/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-02-11T21:31:41+08:00" />
+<meta property="article:modified_time" content="2022-02-11T21:31:41+08:00" /><meta property="og:site_name" content="只言片语" />
+
+
+
+
+  
+  
+  
+  
+  <script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "articleSection": "posts",
+        "name": "缓存与数据库的一致性",
+        "headline": "缓存与数据库的一致性",
+        "alternativeHeadline": "",
+        "description": "
+      
+        对于读多写少的场景，缓存是提升系统读性能的一个常见技术。而数据系统一旦引入了新的组件，必然会带来数据一致性的问题。这里不考虑强一致性，强一致性带来的性能问题在高并发的场景下是不可接受的，因此这里说的是最终一致性。 对于缓存和数据库一起使用的模
+
+
+      
+
+
+    ",
+        "inLanguage": "en-us",
+        "isFamilyFriendly": "true",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/xuliwei.xzy\/posts\/consistency-between-cache-and-db\/"
+        },
+        "author" : {
+            "@type": "Person",
+            "name": "Liwei Xu"
+        },
+        "creator" : {
+            "@type": "Person",
+            "name": "Liwei Xu"
+        },
+        "accountablePerson" : {
+            "@type": "Person",
+            "name": "Liwei Xu"
+        },
+        "copyrightHolder" : {
+            "@type": "Person",
+            "name": "Liwei Xu"
+        },
+        "copyrightYear" : "2022",
+        "dateCreated": "2022-02-11T21:31:41.00Z",
+        "datePublished": "2022-02-11T21:31:41.00Z",
+        "dateModified": "2022-02-11T21:31:41.00Z",
+        "publisher":{
+            "@type":"Organization",
+            "name": "Liwei Xu",
+            "url": "https://xuliwei.xzy",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https:\/\/xuliwei.xzyfavicon-32x32.png",
+                "width":"32",
+                "height":"32"
+            }
+        },
+        "image": 
+      [
+      ]
+
+    ,
+        "url" : "https:\/\/xuliwei.xzy\/posts\/consistency-between-cache-and-db\/",
+        "wordCount" : "2145",
+        "genre" : [ ],
+        "keywords" : [ ]
+    }
+  </script>
+
+
+
+</head>
+<body
+    
+      class="body theme--light"
+
+    
+  >
+    <div class="wrapper">
+      <aside
+        
+          class="wrapper__sidebar"
+
+        
+      ><div
+  class="sidebar
+    animated fadeInDown
+
+  "
+>
+  <div class="sidebar__content">
+    <div class="sidebar__introduction">
+      <img
+        class="sidebar__introduction-profileimage"
+        src="/images/profile.jpg"
+        alt="profile picture"
+      />
+      
+        <div class="sidebar__introduction-title">
+          <a href="/">只言片语</a>
+        </div>
+
+      
+      <div class="sidebar__introduction-description">
+        <p></p>
+      </div>
+    </div>
+    <ul class="sidebar__list">
+      
+    </ul>
+  </div><footer class="footer footer__sidebar">
+  <ul class="footer__list">
+    <li class="footer__item">
+      &copy;
+      
+        Liwei Xu
+        2022
+
+
+      
+    </li>
+    
+  </ul>
+</footer>
+  
+  <script
+    type="text/javascript"
+    src="/js/medium-zoom.min.1248fa75275e5ef0cbef27e8c1e27dc507c445ae3a2c7d2ed0be0809555dac64.js"
+    integrity="sha256-Ekj6dSdeXvDL7yfoweJ9xQfERa46LH0u0L4ICVVdrGQ="
+    crossorigin="anonymous"
+  ></script></div>
+</aside>
+      <main
+        
+          class="wrapper__main"
+
+        
+      >
+        <header class="header"><div
+  class="
+    animated fadeInDown
+
+  "
+>
+  <a role="button" class="navbar-burger" data-target="navMenu" aria-label="menu" aria-expanded="false">
+    <span aria-hidden="true" class="navbar-burger__line"></span>
+    <span aria-hidden="true" class="navbar-burger__line"></span>
+    <span aria-hidden="true" class="navbar-burger__line"></span>
+  </a>
+  <nav class="nav">
+    <ul class="nav__list" id="navMenu">
+      
+      
+        
+        
+          <li class="nav__list-item">
+            <a
+              
+              href="/"
+              
+              title=""
+              >Home</a
+            >
+          </li>
+
+        
+
+
+      
+    </ul>
+    <ul class="nav__list nav__list--end">
+      
+      
+        <li class="nav__list-item">
+          <div class="themeswitch">
+            <a title="Switch Theme">
+              <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a>
+          </div>
+        </li>
+
+      
+    </ul>
+  </nav>
+</div>
+</header>
+  <div
+    class="post 
+      animated fadeInDown
+
+    "
+  >
+    
+    <div class="post__content">
+      <h1>缓存与数据库的一致性</h1>
+      <p>对于读多写少的场景，缓存是提升系统读性能的一个常见技术。而数据系统一旦引入了新的组件，必然会带来数据一致性的问题。这里不考虑强一致性，强一致性带来的性能问题在高并发的场景下是不可接受的，因此这里说的是最终一致性。</p>
+<p>对于缓存和数据库一起使用的模式，一般来说有以下几种。其中最常用的应该是 Cache Aside Pattern。</p>
+<h2 id="cache-aside-pattern">Cache Aside Pattern</h2>
+<p>这种方案下，需要分别操作缓存和数据库。</p>
+<ul>
+<li>对于读操作，一般都是先读缓存，如果命中则返回结果；如果 miss 则去读库，并将结果放入缓存，然后再返回结果。这个没什么争议。</li>
+<li>对于写操作，则面临两个问题：
+<ul>
+<li>一个是如何更新缓存，是淘汰缓存（让下一个读操作去更新）还是修改缓存；</li>
+<li>一个该先更新数据库还是该先更新缓存</li>
+</ul>
+</li>
+</ul>
+<h3 id="更新缓存还是淘汰缓存">更新缓存还是淘汰缓存？</h3>
+<p>许多文章在分析淘汰还是更新时，举了很多数据不一致的例子。其实更新缓存和淘汰缓存在数据一致性上没有太大区别。对数据一致性有影响的是操作缓存和操作数据库的先后顺序以及并发操作带来的不确定性。更新缓存和淘汰缓存的区别在于成本：</p>
+<ul>
+<li>更新缓存的优点会减少miss，但是有两处成本的增加：
+<ul>
+<li>有些缓存的值计算较为复杂，可能消耗较大，没必要放在更新操作中；</li>
+<li>有些数据可能是写多读少，那么去频繁更新不会被访问的缓存是性能上的浪费，而删除缓存在 Redis 上只是做一个标记，成本很低。</li>
+</ul>
+</li>
+<li>淘汰缓存的优点是简单，而且减少不必要的缓存写入，缺点则是会造成一次 miss。虽然只有一个 miss，如果是热点 key 的话还会引起缓存击穿的问题，可以用分布式锁的方式或主备缓存来解决，不过这是另一个议题。</li>
+</ul>
+<p>因此一般选择淘汰缓存。</p>
+<h3 id="先更新数据库还是先淘汰缓存">先更新数据库还是先淘汰缓存？</h3>
+<p>首先再明确一次，缓存和数据库不能放在一个事务中（即强一致性），这在并发情况下这是不可接受的。</p>
+<p>Cache Aside Pattern 的要求是先更新数据库后淘汰缓存，这也是一般大家推荐的。因为即使在单机数据库加 Redis 的情况下，先淘汰缓存都会有不小的概率导致脏数据，比如更新操作 Q1 删除了缓存后，另一个读操作 Q2 先遇到 miss，然后读取了旧数据，此时 Q1 更新了数据库，然后 Q2 更新了缓存这样的场景。因为这样后面的操作都会读脏数据。</p>
+<p>当然先更新数据库后淘汰缓存也会出现极端情况，比如缓存更新的套路中提到的“这个case理论上会出现，不过，实际上出现的概率可能非常低，因为这个条件需要发生在读缓存时缓存失效，而且并发着有一个写操作。而实际上数据库的写操作会比读操作慢得多，而且还要锁表，而读操作必需在写操作前进入数据库操作，而又要晚于写操作更新缓存，所有的这些条件都具备的概率基本并不大。”的场景。</p>
+<p>上述情况描述的是单数据库的情况下，数据库和缓存操作都能成功的前提下的取舍。实际场景中还有以下因素需要考虑：</p>
+<ul>
+<li>如果更新完了数据库，删除缓存失败了怎么办。</li>
+<li>如果数据库是主从结构，就需要考虑主从延迟。</li>
+</ul>
+<p>其实考虑了上面这些因素，先淘汰缓存和后淘汰缓存就都不绝对了，因为都需要一些其他机制来进行补充。最简单的机制：缓存设置较短的过期时间。这个适用于并发度不高的场景。最简单并且肯定会达到最终一致性。另一种机制是延迟双删：</p>
+<ol>
+<li>删除缓存</li>
+<li>更新数据库</li>
+<li>睡眠一个特定时间</li>
+<li>再删除一次缓存</li>
+</ol>
+<p>这里的特定时间，是需要根据具体情况衡量的，它需要大于主从延迟，加一次读库并写入缓存的时间，这样才能避免没有另一个进程，读到了写入之间的脏数据并更新到了缓存中。</p>
+<p>上面延迟双删会让写操作的RT值变高，因此可以将第二次删除改成异步的方式。可以通过发送消息队列，或者订阅 binlog 获取通知的形式，来进行第二次删除。此时会发现就跟之前说的一样，先淘汰还是后淘汰并不是那么绝对了。总结而言，最终可以采取的机制如下：</p>
+<ol>
+<li>删除缓存（可选）</li>
+<li>更新数据库</li>
+<li>发送一条删除缓存消息给删除缓存的服务/或者删除缓存的服务通过订阅binlog得知数据库的变更</li>
+<li>删除缓存的服务拿到数据后，等待一个特定时间后进行删除缓存</li>
+</ol>
+<h2 id="readwrite-through">Read/Write Through</h2>
+<p>PatternRead/Write Through 套路是把更新数据库（Repository）的操作由缓存自己代理了，所以，对于应用层来说，就简单很多了。可以理解为，应用认为后端就是一个单一的存储，而存储自己维护自己的Cache。</p>
+<ul>
+<li>Read Through：Read Through 套路就是在查询操作中更新缓存，也就是说，当缓存失效的时候（过期或LRU换出），Cache Aside 是由调用方负责把数据加载入缓存，而 Read Through 则用缓存服务自己来加载，从而对应用方是透明的。</li>
+<li>Write Through：Write Through 套路和 Read Through 相仿，不过是在更新数据时发生。当有数据更新的时候，如果没有命中缓存，直接更新数据库，然后返回。如果命中了缓存，则更新缓存，然后再由Cache自己更新数据库（这是一个同步操作）</li>
+</ul>
+<h2 id="write-behind-caching-pattern">Write Behind Caching Pattern</h2>
+<p>Write Behind 又叫 Write Back。类似 Linux 文件系统的 Page Cache 的算法。在更新数据的时候只更新缓存，不更新数据库，缓存会异步地批量更新数据库。这种方式的优点在于性能极高，缺点在于数据会丢失，如果数据还没来得及更新到数据库服务就挂了，这些操作就丢失了。</p>
+<h2 id="异步缓存更新方案">异步缓存更新方案</h2>
+<p>所有的更新操作都走数据库，然后有一个程序异步的从数据库更新到缓存。这个程序可以通过订阅 binlog 的形式来更新缓存。这种方案也有很大的局限性，因为这种方案下只适合数据量较小的，并且大部分数据都能被命中的情况。因为这种方案需要将所有数据都放入缓存中，它没有缓存 miss 时的加载步骤。</p>
+<h2 id="参考">参考</h2>
+<ul>
+<li><a href="https://coolshell.cn/articles/17416.html">缓存更新的套路</a></li>
+<li><a href="https://mp.weixin.qq.com/s/CY4jntpM7VNkBrz1FKRsOw">缓存架构设计细节二三事</a></li>
+<li><a href="https://mp.weixin.qq.com/s/aJ33A5O2PUcUOA34kL-Nzw">面试官：缓存一致性问题怎么解决？</a></li>
+<li><a href="https://mp.weixin.qq.com/s/4W7vmICGx6a_WX701zxgPQ">缓存和数据库一致性问题，看这篇就够了 </a></li>
+</ul>
+</div>
+    <div class="post__footer">
+      
+
+      
+    </div>
+
+    
+  </div>
+
+
+      </main>
+    </div><footer class="footer footer__base">
+  <ul class="footer__list">
+    <li class="footer__item">
+      &copy;
+      
+        Liwei Xu
+        2022
+
+
+      
+    </li>
+    
+  </ul>
+</footer>
+  
+  <script
+    type="text/javascript"
+    src="/js/medium-zoom.min.1248fa75275e5ef0cbef27e8c1e27dc507c445ae3a2c7d2ed0be0809555dac64.js"
+    integrity="sha256-Ekj6dSdeXvDL7yfoweJ9xQfERa46LH0u0L4ICVVdrGQ="
+    crossorigin="anonymous"
+  ></script></body>
+</html>
